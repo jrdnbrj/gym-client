@@ -10,6 +10,7 @@ import Image from "next/image";
 
 import workoutImage from "../../public/workout.jpeg";
 import React, { useState } from "react";
+import OkFeedback from "../components/OkFeedback";
 
 export interface LoginProps {}
 export interface LoginFormProps {}
@@ -27,9 +28,6 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
 
         setValidated(true);
     };
-
-    // TODO: Move to another file and export.
-    const OkFeedback = () => <FormControl.Feedback>¡Ok!</FormControl.Feedback>;
 
     return (
         <Container>
