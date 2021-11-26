@@ -22,8 +22,8 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                 </FormGroup>
 
                 <FormGroup controlId="loginFormPassword" className="mb-3">
-                    <FormLabel>Password</FormLabel>
-                    <FormControl type="password" placeholder="Password" />
+                    <FormLabel>Contraseña</FormLabel>
+                    <FormControl type="password" placeholder="Contraseña" />
                 </FormGroup>
             </Form>
 
@@ -40,7 +40,7 @@ const Login = (_props: LoginProps): JSX.Element => {
             <Row md={2} sm={1} className="vh-100 align-items-center">
                 {/* Hide on smaller than medium screens.*/}
                 <Col className="d-none d-md-block text-center">
-                    <Image src={workoutImage} alt="workout image" />
+                    <Image src={workoutImage} alt="imagen ejercicio" />
                 </Col>
                 <Col>
                     <LoginForm />
