@@ -1,5 +1,11 @@
 import FormControl from "react-bootstrap/FormControl";
 
-const OkFeedback = () => <FormControl.Feedback>¡Ok!</FormControl.Feedback>;
+export interface OkFeedBackProps {
+    message?: string;
+}
+
+const OkFeedback = ({ message }: OkFeedBackProps) => (
+    <FormControl.Feedback>{message || ""}</FormControl.Feedback>
+);
 
 export default OkFeedback;

@@ -8,27 +8,49 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Image from "next/image";
 import workoutImage from "../../public/workout.jpeg";
+import React, { useState } from "react";
+import OkFeedback from "../components/OkFeedback";
+import NotOkFeedback from "../components/NotOkFeedback";
 
 export interface RegisterProps {}
 export interface RegisterFormProps {}
 
 const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
+    const [validated, setValidated] = useState(false);
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        const form = event.currentTarget;
+
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        setValidated(true);
+    };
+
     return (
         <Container>
-            <Form noValidate>
+            <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <FormGroup controlId="registerFormFirstName" className="mb-3">
                     <FormLabel>Nombre</FormLabel>
                     <FormControl type="text" placeholder="Nombre" required />
+                    <OkFeedback />
+                    <NotOkFeedback message="Ingrese un nombre" />
                 </FormGroup>
 
                 <FormGroup controlId="registerFormLastName" className="mb-3">
                     <FormLabel>Apellido</FormLabel>
                     <FormControl type="text" placeholder="Apellido" required />
+                    <OkFeedback />
+                    <NotOkFeedback message="Apellido" />
                 </FormGroup>
 
                 <FormGroup controlId="registerFormEmail" className="mb-3">
                     <FormLabel>Email</FormLabel>
                     <FormControl type="email" placeholder="Email" required />
+                    <OkFeedback />
+                    <NotOkFeedback message="Ingrese un email válido." />
                 </FormGroup>
 
                 <FormGroup controlId="registerFormPassword" className="mb-3">
@@ -39,11 +61,11 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                         required
                     />
                 </FormGroup>
-            </Form>
 
-            <Button variant="primary" type="submit">
-                Register
-            </Button>
+                <Button variant="primary" type="submit">
+                    Register
+                </Button>
+            </Form>
         </Container>
     );
 };
