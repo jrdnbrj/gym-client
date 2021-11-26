@@ -15,15 +15,19 @@ export interface LoginFormProps {}
 const LoginForm = (_props: LoginFormProps): JSX.Element => {
     return (
         <Container>
-            <Form>
+            <Form noValidate>
                 <FormGroup controlId="loginFormEmail" className="mb-3">
                     <FormLabel>Email</FormLabel>
-                    <FormControl type="email" placeholder="Email" />
+                    <FormControl type="email" placeholder="Email" required />
                 </FormGroup>
 
                 <FormGroup controlId="loginFormPassword" className="mb-3">
                     <FormLabel>Contraseña</FormLabel>
-                    <FormControl type="password" placeholder="Contraseña" />
+                    <FormControl
+                        type="password"
+                        placeholder="Contraseña"
+                        required
+                    />
                 </FormGroup>
             </Form>
 

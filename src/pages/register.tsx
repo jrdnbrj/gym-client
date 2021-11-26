@@ -15,25 +15,29 @@ export interface RegisterFormProps {}
 const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
     return (
         <Container>
-            <Form>
+            <Form noValidate>
                 <FormGroup controlId="registerFormFirstName" className="mb-3">
                     <FormLabel>Nombre</FormLabel>
-                    <FormControl type="text" placeholder="Nombre" />
+                    <FormControl type="text" placeholder="Nombre" required />
                 </FormGroup>
 
                 <FormGroup controlId="registerFormLastName" className="mb-3">
                     <FormLabel>Apellido</FormLabel>
-                    <FormControl type="text" placeholder="Apellido" />
+                    <FormControl type="text" placeholder="Apellido" required />
                 </FormGroup>
 
                 <FormGroup controlId="registerFormEmail" className="mb-3">
                     <FormLabel>Email</FormLabel>
-                    <FormControl type="email" placeholder="Email" />
+                    <FormControl type="email" placeholder="Email" required />
                 </FormGroup>
 
                 <FormGroup controlId="registerFormPassword" className="mb-3">
                     <FormLabel>Contraseña</FormLabel>
-                    <FormControl type="password" placeholder="Contraseña" />
+                    <FormControl
+                        type="password"
+                        placeholder="Contraseña"
+                        required
+                    />
                 </FormGroup>
             </Form>
 
