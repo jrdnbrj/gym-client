@@ -1,11 +1,9 @@
-interface HomeProps {}
+export interface HomeProps {}
 
-const Home = (_props: HomeProps): JSX.Element => {
+export const Home = (_props: HomeProps): JSX.Element => {
     return (
         <div>
             <h1>Home</h1>
         </div>
     );
 };
-
-export default Home;
