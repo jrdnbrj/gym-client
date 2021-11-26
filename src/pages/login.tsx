@@ -11,6 +11,7 @@ import Image from "next/image";
 import workoutImage from "../../public/workout.jpeg";
 import React, { useState } from "react";
 import OkFeedback from "../components/OkFeedback";
+import NotOkFeedback from "../components/NotOkFeedback";
 
 export interface LoginProps {}
 export interface LoginFormProps {}
@@ -36,6 +37,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                     <FormLabel>Email</FormLabel>
                     <FormControl type="email" placeholder="Email" required />
                     <OkFeedback />
+                    <NotOkFeedback message="Ingrese un email válido." />
                 </FormGroup>
 
                 <FormGroup controlId="loginFormPassword" className="mb-3">
