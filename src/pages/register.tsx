@@ -63,7 +63,7 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                 </FormGroup>
 
                 <Button variant="primary" type="submit">
-                    Register
+                    Registrarse
                 </Button>
             </Form>
         </Container>

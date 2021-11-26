@@ -50,7 +50,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                 </FormGroup>
 
                 <Button variant="primary" type="submit">
-                    Login
+                    Ingresar
                 </Button>
             </Form>
         </Container>
