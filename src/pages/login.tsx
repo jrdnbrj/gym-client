@@ -7,18 +7,37 @@ import FormControl from "react-bootstrap/FormControl";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Image from "next/image";
+
 import workoutImage from "../../public/workout.jpeg";
+import React, { useState } from "react";
 
 export interface LoginProps {}
 export interface LoginFormProps {}
 
 const LoginForm = (_props: LoginFormProps): JSX.Element => {
+    const [validated, setValidated] = useState(false);
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        const form = event.currentTarget;
+
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        setValidated(true);
+    };
+
+    // TODO: Move to another file and export.
+    const OkFeedback = () => <FormControl.Feedback>¡Ok!</FormControl.Feedback>;
+
     return (
         <Container>
-            <Form noValidate>
+            <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <FormGroup controlId="loginFormEmail" className="mb-3">
                     <FormLabel>Email</FormLabel>
                     <FormControl type="email" placeholder="Email" required />
+                    <OkFeedback />
                 </FormGroup>
 
                 <FormGroup controlId="loginFormPassword" className="mb-3">
@@ -29,11 +48,11 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                         required
                     />
                 </FormGroup>
-            </Form>
 
-            <Button variant="primary" type="submit">
-                Login
-            </Button>
+                <Button variant="primary" type="submit">
+                    Login
+                </Button>
+            </Form>
         </Container>
     );
 };
