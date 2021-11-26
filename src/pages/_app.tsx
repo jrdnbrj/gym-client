@@ -6,6 +6,8 @@ import { AppProps } from "next/app";
 
 import "bootstrap/dist/css/bootstrap.css";
 
+// TODO: Use the same tsconfig.json in server and client for
+// consistency.
 const MyApp = ({ Component, pageProps }: AppProps): JSX.Element => {
     return (
         <ApolloProvider client={client}>
