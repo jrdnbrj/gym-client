@@ -1,8 +1,8 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
-const productionURL = "http://localhost:8000/gql";
-const developmentURL = "http://localhost:8000/gql";
+const productionURL = "http://localhost:8000/graphql";
+const developmentURL = "http://localhost:8000/graphql";
 
 const httpLink = createHttpLink({
     uri: process.env.NODE_ENV === "production" ? productionURL : developmentURL,
