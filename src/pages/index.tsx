@@ -15,8 +15,8 @@ export const Home = (_props: HomeProps): JSX.Element => {
         } else if (error) {
             message = `Un error ha ocurrido:\n${error.message}`;
         } else {
-            if (data.me) {
-                message = `Usuario: ${data.me.firstName} ${data.me.lastName}`;
+            if (data.userMe) {
+                message = `Usuario: ${data.userMe.firstName} ${data.userMe.lastName}`;
             } else {
                 message = "No autenticado. Inicie sesión o regístrese.";
             }

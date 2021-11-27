@@ -12,12 +12,32 @@ import workoutImage from "../../public/workout.jpeg";
 import React, { useState } from "react";
 import OkFeedback from "../components/OkFeedback";
 import NotOkFeedback from "../components/NotOkFeedback";
+import { useMutation } from "@apollo/client";
+import loginMutation from "../graphql/loginMutation";
 
 export interface LoginProps {}
 export interface LoginFormProps {}
 
 const LoginForm = (_props: LoginFormProps): JSX.Element => {
     const [validated, setValidated] = useState(false);
+    const [login, { loading, error, data }] = useMutation(loginMutation);
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const RequestStatus = (): JSX.Element => {
+        let message = "";
+
+        if (loading) {
+            message = "Cargando...";
+        } else if (error) {
+            message = `Un error ha ocurrido:\n${error.message}`;
+        } else if (data) {
+            message = `Bienvenido, ${data.userLogin.firstName}.`;
+        }
+
+        return <p>{message}</p>;
+    };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         const form = event.currentTarget;
@@ -28,6 +48,10 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
         }
 
         setValidated(true);
+
+        // TODO: Prevent API request if form is invalid.
+        login({ variables: { email, password } });
+        event.preventDefault();
     };
 
     return (
@@ -35,7 +59,14 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <FormGroup controlId="loginFormEmail" className="mb-3">
                     <FormLabel>Email</FormLabel>
-                    <FormControl type="email" placeholder="Email" required />
+                    <FormControl
+                        type="email"
+                        placeholder="Email"
+                        required
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                        }}
+                    />
                     <OkFeedback />
                     <NotOkFeedback message="Ingrese un email válido." />
                 </FormGroup>
@@ -46,6 +77,9 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                         type="password"
                         placeholder="Contraseña"
                         required
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                        }}
                     />
                 </FormGroup>
 
@@ -53,6 +87,8 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                     Ingresar
                 </Button>
             </Form>
+
+            <RequestStatus />
         </Container>
     );
 };
