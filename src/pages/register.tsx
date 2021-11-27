@@ -19,6 +19,7 @@ import NotOkFeedback from "../components/NotOkFeedback";
 
 import { useMutation } from "@apollo/client/react";
 import registerMutation from "../graphql/registerMutation";
+import { Alert } from "react-bootstrap";
 
 export interface RegisterProps {}
 export interface RegisterFormProps {}
@@ -88,18 +89,27 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
         }
     };
 
-    const RequestStatus = (): JSX.Element => {
+    const RequestStatus = (): JSX.Element | null => {
         let message = "";
+        let isError = false;
 
         if (loading) {
             message = "Cargando...";
         } else if (error) {
-            message = `Un error ha ocurrido:\n${error.message}`;
+            message = error.message;
+            isError = true;
         } else if (data) {
             message = `Bienvenido, ${data.userRegister.firstName}. Por favor inicia sesión.`;
         }
 
-        return <p>{message}</p>;
+        if (message)
+            return (
+                <Alert variant={isError ? "danger" : undefined}>
+                    {message}
+                </Alert>
+            );
+
+        return null;
     };
 
     return (

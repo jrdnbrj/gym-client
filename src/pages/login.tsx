@@ -6,6 +6,7 @@ import FormLabel from "react-bootstrap/FormLabel";
 import FormControl from "react-bootstrap/FormControl";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
+import Alert from "react-bootstrap/Alert";
 
 import * as EmailValidator from "email-validator";
 
@@ -67,18 +68,28 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
         }
     };
 
-    const RequestStatus = (): JSX.Element => {
+    const RequestStatus = (): JSX.Element | null => {
         let message = "";
+        let isError = false;
 
         if (loading) {
             message = "Cargando...";
         } else if (error) {
-            message = `Un error ha ocurrido:\n${error.message}`;
+            message = error.message;
+            isError = true;
         } else if (data) {
             message = `Bienvenido, ${data.userLogin.firstName}.`;
         }
 
-        return <p>{message}</p>;
+        // TODO: Change alert type to error in case of error.
+        if (message)
+            return (
+                <Alert variant={isError ? "danger" : undefined}>
+                    {message}
+                </Alert>
+            );
+
+        return null;
     };
 
     return (
@@ -108,7 +119,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                     />
                 </FormGroup>
 
-                <Button variant="primary" type="submit">
+                <Button variant="primary" type="submit" className="mb-3">
                     Ingresar
                 </Button>
             </Form>
