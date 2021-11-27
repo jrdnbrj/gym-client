@@ -6,10 +6,14 @@ import FormLabel from "react-bootstrap/FormLabel";
 import FormControl from "react-bootstrap/FormControl";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
-import Image from "next/image";
 
+import * as EmailValidator from "email-validator";
+
+import Image from "next/image";
 import workoutImage from "../../public/workout.jpeg";
+
 import React, { useState } from "react";
+
 import OkFeedback from "../components/OkFeedback";
 import NotOkFeedback from "../components/NotOkFeedback";
 import { useMutation } from "@apollo/client";
@@ -19,11 +23,21 @@ export interface LoginProps {}
 export interface LoginFormProps {}
 
 const LoginForm = (_props: LoginFormProps): JSX.Element => {
-    const [validated, setValidated] = useState(false);
-    const [login, { loading, error, data }] = useMutation(loginMutation);
+    const [login, { loading, error, data, reset }] = useMutation(loginMutation);
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [validated, setValidated] = useState(false);
+    const [formData, setFormData] = useState({ email: "", password: "" });
+    const [isControlValid, setIsControlValid] = useState({
+        email: false,
+        password: false,
+    });
+
+    const handleControlChange = ({
+        target,
+    }: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [target.id]: target.value });
+        setValidated(false);
+    };
 
     const RequestStatus = (): JSX.Element => {
         let message = "";
@@ -40,46 +54,55 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        const form = event.currentTarget;
-
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
+        event.preventDefault();
+        event.stopPropagation();
 
         setValidated(true);
 
-        // TODO: Prevent API request if form is invalid.
-        login({ variables: { email, password } });
-        event.preventDefault();
+        // Validate data
+        let isFormValid = true;
+        if (!EmailValidator.validate(formData.email)) {
+            setIsControlValid({ ...isControlValid, email: false });
+            isFormValid = false;
+        }
+
+        if (!formData.password) {
+            setIsControlValid({ ...isControlValid, password: false });
+            isFormValid = false;
+        }
+
+        if (isFormValid) {
+            setValidated(false);
+
+            reset();
+            login({ variables: formData }).catch(() => {});
+
+            event.preventDefault();
+        }
     };
 
     return (
         <Container>
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                <FormGroup controlId="loginFormEmail" className="mb-3">
+                <FormGroup controlId="email" className="mb-3">
                     <FormLabel>Email</FormLabel>
                     <FormControl
                         type="email"
                         placeholder="Email"
                         required
-                        onChange={(e) => {
-                            setEmail(e.target.value);
-                        }}
+                        onChange={handleControlChange}
                     />
                     <OkFeedback />
                     <NotOkFeedback message="Ingrese un email válido." />
                 </FormGroup>
 
-                <FormGroup controlId="loginFormPassword" className="mb-3">
+                <FormGroup controlId="password" className="mb-3">
                     <FormLabel>Contraseña</FormLabel>
                     <FormControl
                         type="password"
                         placeholder="Contraseña"
                         required
-                        onChange={(e) => {
-                            setPassword(e.target.value);
-                        }}
+                        onChange={handleControlChange}
                     />
                 </FormGroup>
 
