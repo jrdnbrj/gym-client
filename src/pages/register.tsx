@@ -45,6 +45,7 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
     const handleControlChange = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
+        // TODO: set ifValid for each form control based on isControlValid.
         setFormData({ ...formData, [event.target.id]: event.target.value });
         setValidated(false);
     };
@@ -84,6 +85,7 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
         if (isFormValid) {
             setValidated(false);
 
+            // TODO: redirect to login after successful register.
             reset();
             register({ variables: formData }).catch((e) => console.log(e));
         }
@@ -127,7 +129,6 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                     <OkFeedback />
                     <NotOkFeedback message="Ingrese un nombre" />
                 </FormGroup>
-
                 <FormGroup controlId="lastName" className="mb-3">
                     <FormLabel>Apellido</FormLabel>
                     <FormControl
@@ -140,7 +141,6 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                     <OkFeedback />
                     <NotOkFeedback message="Apellido" />
                 </FormGroup>
-
                 <FormGroup controlId="email" className="mb-3">
                     <FormLabel>Email</FormLabel>
                     <FormControl
@@ -153,7 +153,6 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                     <OkFeedback />
                     <NotOkFeedback message="Ingrese un email válido." />
                 </FormGroup>
-
                 <FormGroup controlId="password" className="mb-3">
                     <FormLabel>Contraseña</FormLabel>
                     <FormControl
@@ -164,8 +163,8 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                         required
                     />
                 </FormGroup>
-
-                <Button variant="primary" type="submit">
+                // TODO: use success variant.
+                <Button variant="primary" type="submit" className="mb-3">
                     Registrarse
                 </Button>
             </Form>

@@ -36,6 +36,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
     const handleControlChange = ({
         target,
     }: React.ChangeEvent<HTMLInputElement>) => {
+        // TODO: set ifValid for each form control based on isControlValid.
         setFormData({ ...formData, [target.id]: target.value });
         setValidated(false);
     };
@@ -61,6 +62,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
         if (isFormValid) {
             setValidated(false);
 
+            // TODO: redirect to index on successful login.
             reset();
             login({ variables: formData }).catch((e) => {
                 console.log(e);
@@ -81,7 +83,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
             message = `Bienvenido, ${data.userLogin.firstName}.`;
         }
 
-        // TODO: Change alert type to error in case of error.
+        // TODO: use success variant.
         if (message)
             return (
                 <Alert variant={isError ? "danger" : undefined}>
