@@ -39,20 +39,6 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
         setValidated(false);
     };
 
-    const RequestStatus = (): JSX.Element => {
-        let message = "";
-
-        if (loading) {
-            message = "Cargando...";
-        } else if (error) {
-            message = `Un error ha ocurrido:\n${error.message}`;
-        } else if (data) {
-            message = `Bienvenido, ${data.userLogin.firstName}.`;
-        }
-
-        return <p>{message}</p>;
-    };
-
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         event.stopPropagation();
@@ -75,10 +61,24 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
             setValidated(false);
 
             reset();
-            login({ variables: formData }).catch(() => {});
-
-            event.preventDefault();
+            login({ variables: formData }).catch((e) => {
+                console.log(e);
+            });
         }
+    };
+
+    const RequestStatus = (): JSX.Element => {
+        let message = "";
+
+        if (loading) {
+            message = "Cargando...";
+        } else if (error) {
+            message = `Un error ha ocurrido:\n${error.message}`;
+        } else if (data) {
+            message = `Bienvenido, ${data.userLogin.firstName}.`;
+        }
+
+        return <p>{message}</p>;
     };
 
     return (
