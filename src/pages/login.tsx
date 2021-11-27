@@ -88,9 +88,10 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                     <FormLabel>Email</FormLabel>
                     <FormControl
                         type="email"
+                        value={formData.email}
                         placeholder="Email"
-                        required
                         onChange={handleControlChange}
+                        required
                     />
                     <OkFeedback />
                     <NotOkFeedback message="Ingrese un email válido." />
@@ -100,6 +101,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                     <FormLabel>Contraseña</FormLabel>
                     <FormControl
                         type="password"
+                        value={formData.password}
                         placeholder="Contraseña"
                         required
                         onChange={handleControlChange}

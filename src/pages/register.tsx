@@ -109,6 +109,7 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                     <FormLabel>Nombre</FormLabel>
                     <FormControl
                         type="text"
+                        value={formData.firstName}
                         placeholder="Nombre"
                         onChange={handleControlChange}
                         required
@@ -121,6 +122,7 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                     <FormLabel>Apellido</FormLabel>
                     <FormControl
                         type="text"
+                        value={formData.lastName}
                         placeholder="Apellido"
                         onChange={handleControlChange}
                         required
@@ -133,6 +135,7 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                     <FormLabel>Email</FormLabel>
                     <FormControl
                         type="email"
+                        value={formData.email}
                         placeholder="Email"
                         onChange={handleControlChange}
                         required
@@ -145,8 +148,9 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                     <FormLabel>Contraseña</FormLabel>
                     <FormControl
                         type="password"
-                        onChange={handleControlChange}
+                        value={formData.password}
                         placeholder="Contraseña"
+                        onChange={handleControlChange}
                         required
                     />
                 </FormGroup>
