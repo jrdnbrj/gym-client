@@ -1,3 +1,8 @@
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
+
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
@@ -7,14 +12,11 @@ import FormControl from "react-bootstrap/FormControl";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import Spinner from "react-bootstrap/Spinner";
 
 import * as EmailValidator from "email-validator";
 
-import Image from "next/image";
 import workoutImage from "../../public/workout.jpeg";
-
-import React, { useState } from "react";
-
 import OkFeedback from "../components/OkFeedback";
 import NotOkFeedback from "../components/NotOkFeedback";
 import { useMutation } from "@apollo/client";
@@ -24,7 +26,27 @@ export interface LoginProps {}
 export interface LoginFormProps {}
 
 const LoginForm = (_props: LoginFormProps): JSX.Element => {
-    const [login, { loading, error, data, reset }] = useMutation(loginMutation);
+    const router = useRouter();
+    const dispatch = useDispatch();
+
+    const user = useSelector((state: any) => state.user.user);
+
+    useEffect(() => {
+        // if (user.id) router.push("/");
+        if (user.id) window.location.href = "/";
+    } , [user]);
+
+    const [login, { loading, error, data, reset }] = useMutation(loginMutation, {
+        onCompleted: ({ userLogin }) => {
+            dispatch({ type: "SET_USER", user: {
+                id: userLogin.id,
+                firstName: userLogin.firstName,
+                lastName: userLogin.lastName,
+                email: userLogin.email,
+            }});
+        },
+        onError: (error) => console.log(error)
+    });
 
     const [validated, setValidated] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -62,36 +84,9 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
         if (isFormValid) {
             setValidated(false);
 
-            // TODO: redirect to index on successful login.
             reset();
-            login({ variables: formData }).catch((e) => {
-                console.log(e);
-            });
+            login({ variables: formData })
         }
-    };
-
-    const RequestStatus = (): JSX.Element | null => {
-        let message = "";
-        let isError = false;
-
-        if (loading) {
-            message = "Cargando...";
-        } else if (error) {
-            message = error.message;
-            isError = true;
-        } else if (data) {
-            message = `Bienvenido, ${data.userLogin.firstName}.`;
-        }
-
-        // TODO: use success variant.
-        if (message)
-            return (
-                <Alert variant={isError ? "danger" : undefined}>
-                    {message}
-                </Alert>
-            );
-
-        return null;
     };
 
     return (
@@ -122,11 +117,11 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                 </FormGroup>
 
                 <Button variant="primary" type="submit" className="mb-3">
+                    {loading ? <Spinner size="sm" /> : ""}
                     Ingresar
                 </Button>
             </Form>
 
-            <RequestStatus />
         </Container>
     );
 };
