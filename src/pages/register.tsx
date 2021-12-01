@@ -163,7 +163,6 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                         required
                     />
                 </FormGroup>
-                {/* TODO: use success variant. */}
                 <Button variant="primary" type="submit" className="mb-3">
                     Registrarse
                 </Button>

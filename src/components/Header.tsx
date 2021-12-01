@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useQuery, useMutation } from "@apollo/client";
-import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'universal-cookie';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -13,13 +13,12 @@ import meQuery from "../graphql/meQuery";
 
 const Header = () => {
 
+    const dispatch = useDispatch();
     const { data, refetch } = useQuery(meQuery);
 
     console.log(data);
 
     const cookies = new Cookies();
-    const dispatch = useDispatch();
-    const user = useSelector((state: any) => state.user.user);
 
     console.log(cookies.getAll())
 

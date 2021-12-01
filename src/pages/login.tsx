@@ -17,6 +17,7 @@ import Spinner from "react-bootstrap/Spinner";
 import * as EmailValidator from "email-validator";
 
 import workoutImage from "../../public/workout.jpeg";
+
 import OkFeedback from "../components/OkFeedback";
 import NotOkFeedback from "../components/NotOkFeedback";
 import { useMutation } from "@apollo/client";
