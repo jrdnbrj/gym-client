@@ -34,6 +34,8 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
         firstName: "",
         lastName: "",
         password: "",
+        isClient: true,
+        isInstructor: false,
     });
     const [isDataValid, setIsDataValid] = useState({
         email: false,

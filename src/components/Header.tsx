@@ -1,6 +1,6 @@
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { useQuery, useMutation } from "@apollo/client";
-import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Navbar from 'react-bootstrap/Navbar';
@@ -18,9 +18,21 @@ const Header = () => {
 
     console.log(data);
 
-    const cookies = new Cookies();
-
-    console.log(cookies.getAll())
+    useEffect(() => {
+        if (data?.userMe) {
+            dispatch({ 
+                type: "SET_USER", 
+                user: {
+                    id: data.userMe.id,
+                    firstName: data.userMe.firstName,
+                    lastName: data.userMe.lastName,
+                    email: data.userMe.email,
+                    clientID: data.userMe.client.id,
+                    instructorID: data.userMe.instructor?.id,
+                }
+            });
+        }
+    }, [data]);
 
     const [logout] = useMutation(logoutMutation, { 
         onCompleted: (data) => {

@@ -7,6 +7,12 @@ const meQuery = gql`
             firstName
             lastName
             email
+            client {
+                id
+            }
+            instructor {
+                id
+            }
         }
     }
 `;

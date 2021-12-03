@@ -4,6 +4,8 @@ const initialState = {
         firstName: undefined,
         lastName: undefined,
         email: undefined,
+        clientID: undefined,
+        instructorID: undefined,
     }
 }
 
