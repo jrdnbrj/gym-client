@@ -166,3 +166,9 @@
 .calendar tbody tr td.available div {
 	background: #09b4127e;
 }
+
+.forgot-password {
+	text-decoration: underline;
+	color: blue;
+	margin-left: 4rem;
+}

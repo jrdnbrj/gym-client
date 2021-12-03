@@ -13,6 +13,7 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
 import Spinner from "react-bootstrap/Spinner";
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
 import * as EmailValidator from "email-validator";
 
@@ -22,6 +23,8 @@ import OkFeedback from "../components/OkFeedback";
 import NotOkFeedback from "../components/NotOkFeedback";
 import { useMutation } from "@apollo/client";
 import loginMutation from "../graphql/loginMutation";
+import forgotPasswordMutation from "../graphql/forgotPasswordMutation";
+import changePasswordMutation from "../graphql/changePasswordMutation";
 
 export interface LoginProps {}
 export interface LoginFormProps {}
@@ -48,6 +51,28 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
         },
         onError: (error) => console.log(error)
     });
+
+    const [forgotPassword, { loading: forgotPasswordLoading }] = useMutation(
+        forgotPasswordMutation, {
+        onCompleted: (data) => {
+            alert('El correo ha sido enviado.');
+            console.log(data);
+        },
+        onError: (error) => console.log(error)
+    });
+
+    const [changePassword, { loading: changePasswordLoading }] = useMutation(
+        changePasswordMutation, {
+        onCompleted: (data) => {
+            alert("La contraseña se ha cambiado correctamente. Por favor inicia sesión con tu nueva contraseña.");
+            console.log(data);
+        },
+        onError: (error) => console.log(error)
+    });
+
+    const [email, setEmail] = useState("");
+    const [token, setToken] = useState("");
+    const [password, setPassword] = useState("");
 
     const [validated, setValidated] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -90,6 +115,24 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
         }
     };
 
+    const [forgot, setForgot] = useState(false);
+
+    const onChangeForgot = () => {
+        if (!token) {
+            console.log("No Token");
+            forgotPassword({ variables: { userEmail: email } });
+        }
+        else {
+            console.log("token");
+            changePassword({ 
+                variables: { 
+                    newPassword: password, 
+                    token: token 
+                }
+            });
+        } 
+    };
+
     return (
         <Container>
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
@@ -121,6 +164,39 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                     {loading ? <Spinner size="sm" /> : ""}
                     Ingresar
                 </Button>
+                <span
+                    className="forgot-password"
+                    onClick={() => setForgot(true)}
+                >
+                    Olvidé la contraseña
+                </span>
+                {forgot && 
+                    <>
+                        <FloatingLabel label="Ingresa tu email">
+                            <Form.Control type="text" placeholder="Ingresa tu email" 
+                                onChange={e => setEmail(e.target.value)} value={email}    
+                            />
+                        </FloatingLabel>
+                        <FloatingLabel label="Ingresa el token enviado al mail">
+                            <Form.Control type="text" placeholder="Ingresa el token enviado al mail" 
+                                onChange={e => setToken(e.target.value)} value={token}
+                            />
+                        </FloatingLabel>
+                        <FloatingLabel label="Ingresa la nueva contraseña">
+                            <Form.Control type="password" placeholder="Ingresa la nueva contraseña" 
+                                onChange={e => setPassword(e.target.value)} value={password}
+                            />
+                        </FloatingLabel>
+                        <Button 
+                            variant="primary" 
+                            className="my-3"
+                            onClick={() => onChangeForgot()}
+                        >
+                            {loading ? <Spinner size="sm" /> : ""}
+                            Recuperar Contraseña
+                        </Button>
+                    </>
+                }
             </Form>
 
         </Container>
