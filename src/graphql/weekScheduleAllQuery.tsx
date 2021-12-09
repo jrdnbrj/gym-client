@@ -4,6 +4,7 @@ const weekScheduleAllMutation = gql`
     query {
         weekScheduleAll {
             id
+            workoutType
             quotas
             students {
                 id

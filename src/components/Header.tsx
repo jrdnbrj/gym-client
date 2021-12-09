@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useQuery, useMutation } from "@apollo/client";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
 
 import logoutMutation from "../graphql/logoutMutation";
 import meQuery from "../graphql/meQuery";
@@ -13,6 +15,7 @@ import meQuery from "../graphql/meQuery";
 
 const Header = () => {
 
+    const router = useRouter();
     const dispatch = useDispatch();
     const { data, refetch } = useQuery(meQuery);
 
@@ -27,7 +30,7 @@ const Header = () => {
                     firstName: data.userMe.firstName,
                     lastName: data.userMe.lastName,
                     email: data.userMe.email,
-                    clientID: data.userMe.client.id,
+                    clientID: data.userMe.client?.id,
                     instructorID: data.userMe.instructor?.id,
                 }
             });
@@ -48,22 +51,30 @@ const Header = () => {
         if (data?.userMe) {
             return (
                 <Nav>
-                    <span>{data.userMe.firstName} {data.userMe.lastName}</span>
-                    <span className="ms-1" onClick={() => logout()}>
-                        | Cerrar Sesión
+                    <span className="header-name">
+                        {data.userMe.firstName} {data.userMe.lastName}
                     </span>
+                    <Button variant="outline-light ms-2" onClick={() => logout()}>
+                        Cerrar Sesión
+                    </Button>
                 </Nav>
             );
         } else {
             return (
                 <Nav>
                     <Nav className="header-login">
-                        <Link href="/login">
+                        {/* <Link href="/login">
                             <a>Iniciar sesión |</a>
                         </Link>
                         <Link href="/register">
                             <a className="ms-1">Crear Cuenta</a>
-                        </Link>
+                        </Link> */}
+                        <Button variant="outline-light ms-2" onClick={() => router.push("/login")}>
+                            Iniciar Sesión
+                        </Button>
+                        <Button variant="outline-light ms-2" onClick={() => router.push("/register")}>
+                            Registrarse
+                        </Button>
                     </Nav>
                 </Nav>
             );

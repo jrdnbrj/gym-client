@@ -149,9 +149,10 @@
 }
 
 .calendar tbody tr td.busy div,
-.calendar tbody tr td.available div {
-	background: #ff04197e;
-	/* height: 90%; */
+.calendar tbody tr td.available div,
+.calendar tbody tr td.unavailable div {
+	background: #0d60ccab;
+	height: 90%;
 	width: 95%;
 	display: block;
 	margin: auto;
@@ -167,8 +168,18 @@
 	background: #09b4127e;
 }
 
+.calendar tbody tr td.unavailable div {
+	background: #ff04197e;
+	cursor: default;
+}
+
 .forgot-password {
 	text-decoration: underline;
 	color: blue;
 	margin-left: 4rem;
+}
+
+.header-name {
+	font-size: 1.4em;
+	cursor: pointer;
 }
