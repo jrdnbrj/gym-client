@@ -49,7 +49,10 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                 email: userLogin.email,
             }});
         },
-        onError: (error) => console.log(error)
+        onError: (error) => {
+            console.log(error);
+            alert(error.message);
+        }
     });
 
     const [forgotPassword, { loading: forgotPasswordLoading }] = useMutation(

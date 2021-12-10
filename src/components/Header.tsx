@@ -19,9 +19,8 @@ const Header = () => {
     const dispatch = useDispatch();
     const { data, refetch } = useQuery(meQuery);
 
-    console.log(data);
-
     useEffect(() => {
+        console.log(data);
         if (data?.userMe) {
             dispatch({ 
                 type: "SET_USER", 
@@ -39,7 +38,6 @@ const Header = () => {
 
     const [logout] = useMutation(logoutMutation, { 
         onCompleted: (data) => {
-            console.log(data);
             refetch();
             dispatch({ type: 'CLEAR_USER' })
         }
@@ -61,24 +59,58 @@ const Header = () => {
             );
         } else {
             return (
-                <Nav>
-                    <Nav className="header-login">
-                        {/* <Link href="/login">
-                            <a>Iniciar sesión |</a>
-                        </Link>
-                        <Link href="/register">
-                            <a className="ms-1">Crear Cuenta</a>
-                        </Link> */}
-                        <Button variant="outline-light ms-2" onClick={() => router.push("/login")}>
-                            Iniciar Sesión
-                        </Button>
-                        <Button variant="outline-light ms-2" onClick={() => router.push("/register")}>
-                            Registrarse
-                        </Button>
-                    </Nav>
+                <Nav className="header-login">
+                    <Button 
+                        variant="outline-light" 
+                        onClick={() => router.push("/login")}
+                    >
+                        Iniciar Sesión
+                    </Button>
+                    <Button 
+                        variant="outline-light ms-2" 
+                        onClick={() => router.push("/register")}
+                    >
+                        Registrarse
+                    </Button>
                 </Nav>
             );
         }
+    };
+
+    const UserLinks = (): JSX.Element => {
+        // if (data?.userMe.client) {
+        //     return <Nav.Link 
+        //         className="text-light" 
+        //         onClick={() => router.push('calendario')}
+        //     >
+        //         Calendario
+        //     </Nav.Link>
+        // } else if (data?.userMe.instructor) {
+        //     return (
+        //         <Nav.Link 
+        //             className="text-light" 
+        //             onClick={() => router.push('instructor')}
+        //         >
+        //             Instructor
+        //         </Nav.Link>
+        //         <Nav.Link 
+        //             className="text-light" 
+        //             onClick={() => router.push('calendario')}
+        //         >
+        //             Calendario
+        //         </Nav.Link>
+        //     );
+        // }
+        if (data?.userMe)
+            return (
+                <Nav.Link 
+                    className="text-light" 
+                    onClick={() => router.push('calendario')}
+                >
+                    Calendario
+                </Nav.Link>
+            )
+        else return null;
     };
 
     return (
@@ -90,8 +122,7 @@ const Header = () => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
-                        {/* <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#link">Link</Nav.Link> */}
+                        <UserLinks />
                     </Nav>
                     <UserIndicator />
                 </Navbar.Collapse>

@@ -3,11 +3,14 @@ import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { useSelector } from 'react-redux';
 
 import weekScheduleAllMutation from '../graphql/weekScheduleAllQuery';
+import instructorSendEmailMutation from '../graphql/instructorSendEmailMutation';
 
+import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
 import Calendar from '../components/Calendar';
 import Modal from "../components/Modal";
@@ -18,7 +21,7 @@ const types = {
     Stength: 'Fuerza',
     Stretch: 'Estiramiento',
     Balance: 'Balance',
-    MartialArts: 'Artes marciales',
+    MartialArts: 'Artes Marciales',
 }
 
 const emojis = {
@@ -33,6 +36,7 @@ const instructor = () => {
 
     const user = useSelector(state => state.user.user);
 
+    const [message, setMessage] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [classInfo, setClassInfo] = useState({
@@ -45,6 +49,28 @@ const instructor = () => {
     });
 
     const { loading, error, data, refetch } = useQuery(weekScheduleAllMutation);
+    const [instructorSendEmail, { loading: loadingEmail }] = useMutation(
+        instructorSendEmailMutation, {
+            onCompleted: () => {
+                alert('El correo ha sido enviado a todos los alumnos inscritos.');
+            },
+            onError: (error) => {
+                console.log(error);
+                alert('Ha ocurrido un error al enviar el correo. Intenta nuevamente.');
+            }
+        } 
+    );
+
+    const sendEmail = () => {
+        const message = document.getElementById('message').value;
+
+        instructorSendEmail({
+            variables: {
+                weekScheduleID: classInfo.scheduleID,
+                message,
+            }
+        });
+    }
 
     const viewClassComponent = () => {
         return <>
@@ -60,6 +86,25 @@ const instructor = () => {
                 <ListGroup.Item>
                     <strong>Estudiantes: </strong>
                     {classInfo.students}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                    <FloatingLabel label="Envia un mensaje a tus estudiantes.">
+                        <Form.Control
+                            as="textarea"
+                            placeholder="mensaje"
+                            style={{ height: '150px' }}
+                            id="message"
+                            // value={message}
+                            // onChange={e => setMessage(e.target.value)}
+                        />
+                    </FloatingLabel>
+                    <Button 
+                        variant="primary" 
+                        style={{ marginTop: '3px' }}
+                        onClick={sendEmail}
+                    >
+                        {loadingEmail ? <Spinner animation="border" size="sm" /> : 'Enviar'}
+                    </Button>
                 </ListGroup.Item>
             </ListGroup>
         </>
@@ -120,7 +165,10 @@ const instructor = () => {
 
     return (
         <div className="mx-3">
-            {loading ? <div>Cargando...</div> : <Calendar ClassDay={ClassDay} /> }
+            {loading ? 
+                <Spinner animation="border" variant="primary" /> : 
+                <Calendar ClassDay={ClassDay} />
+            }
             <Modal 
                 show={showModal}
                 onHide={() => setShowModal(false)} 

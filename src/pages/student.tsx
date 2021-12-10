@@ -21,7 +21,7 @@ const types = {
     Stength: 'Fuerza',
     Stretch: 'Estiramiento',
     Balance: 'Balance',
-    MartialArts: 'Artes marciales',
+    MartialArts: 'Artes Marciales',
 }
 
 const emojis = {
@@ -166,8 +166,6 @@ const student = () => {
                     startDate = schudelTime.toUTCString();
                     scheduleDates = schedule.days;
                     type = schedule.workoutType;
-                    console.log(quotas, typeof quotas)
-                    if (quotas === 0) unavailable = true;
                 }
             }
         })
@@ -214,7 +212,10 @@ const student = () => {
 
     return (
         <div className="mx-3">
-            {loading ? <div>Cargando...</div> : <Calendar ClassDay={ClassDay} /> }
+            {loading ? 
+                <Spinner animation="border" variant="primary" /> : 
+                <Calendar ClassDay={ClassDay} /> 
+            }
             <Modal 
                 show={showModal}
                 onHide={() => setShowModal(false)} 
