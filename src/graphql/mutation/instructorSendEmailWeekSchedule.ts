@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-const instructorSendEmailMutation = gql`
+const instructorSendEmailWeekSchedule = gql`
     mutation ($weekScheduleID: Float!, $message: String!) {
         instructorSendEmailWeekSchedule(
             weekScheduleID: $weekScheduleID, 
@@ -9,4 +9,4 @@ const instructorSendEmailMutation = gql`
     }
 `;
 
-export default instructorSendEmailMutation;
+export default instructorSendEmailWeekSchedule;

@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
-const changePasswordMutation = gql`
+const userChangePassword = gql`
     mutation ($newPassword: String!, $token: String!) {
         userChangePassword(newPassword: $newPassword, token: $token)
     }
 `;
 
-export default changePasswordMutation;
+export default userChangePassword;

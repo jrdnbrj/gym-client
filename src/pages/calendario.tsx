@@ -1,22 +1,23 @@
 import { useSelector } from 'react-redux';
-import Student from "./student";
-import Instructor from "./instructor";
-import Admin from "./admin";
+import Client from "../components/Client";
+import Instructor from "../components/Instructor";
+import Admin from "../components/Admin";
 
 const Calendario = () => {
 
-    const user = useSelector(state => state.user.user);
+    const currentRole = useSelector(state => state.user.currentRole);
 
     const PageByRole = () => {
-        if (user.instructorID)
+        if (currentRole === 'instructor')
             return <Instructor />;
+        else if (currentRole === 'admin')
+            return <Admin />;
         else
-            return <Student />;
+            return <Client />;
+
     }
 
-    return (
-        <PageByRole />
-    );
+    return <PageByRole />;
 };
     
 export default Calendario;

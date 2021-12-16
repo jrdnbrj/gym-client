@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { useSelector } from 'react-redux';
 
-import weekScheduleAllMutation from '../graphql/weekScheduleAllQuery';
-import userByIDQuery from '../graphql/userByIDQuery';
-import bookClassMutation from '../graphql/bookClassMutation';
+import weekScheduleAll from '../graphql/query/weekScheduleAll';
+import userByID from '../graphql/query/userByID';
+import weekScheduleAddStudent from '../graphql/mutation/weekScheduleAddStudent';
 
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -32,7 +32,7 @@ const emojis = {
     MartialArts: '🙅🏻',
 }
 
-const student = () => {
+const Client = () => {
 
     const user = useSelector(state => state.user.user);
 
@@ -48,11 +48,11 @@ const student = () => {
         type: '',
     });
 
-    const { loading, error, data, refetch } = useQuery(weekScheduleAllMutation);
-    const [getInstructor, { loading: loadingUser, data: dataUser }] = useLazyQuery(userByIDQuery);
+    const { loading, error, data, refetch } = useQuery(weekScheduleAll);
+    const [getInstructor, { loading: loadingUser, data: dataUser }] = useLazyQuery(userByID);
 
     const [bookClass, { loading: loadingBook }] = useMutation(
-        bookClassMutation, {
+        weekScheduleAddStudent, {
             onCompleted: () => {
                 refetch();
                 setShowModal(false);
@@ -227,4 +227,4 @@ const student = () => {
 }
 
 
-export default student;
+export default Client;

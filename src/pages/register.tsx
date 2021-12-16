@@ -13,20 +13,23 @@ import Image from "next/image";
 import workoutImage from "../../public/workout.jpeg";
 
 import React, { useState } from "react";
+import { useRouter } from 'next/router';
 
 import OkFeedback from "../components/OkFeedback";
 import NotOkFeedback from "../components/NotOkFeedback";
 
 import { useMutation } from "@apollo/client/react";
-import registerMutation from "../graphql/registerMutation";
+import userRegister from "../graphql/mutation/userRegister";
 import { Alert } from "react-bootstrap";
 
 export interface RegisterProps {}
 export interface RegisterFormProps {}
 
 const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
+    const router = useRouter();
+
     const [register, { loading, error, data, reset }] =
-        useMutation(registerMutation);
+        useMutation(userRegister);
 
     const [validated, setValidated] = useState(false);
     const [formData, setFormData] = useState({
@@ -36,6 +39,7 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
         password: "",
         isClient: true,
         isInstructor: false,
+        isAdmin: false,
     });
     const [isDataValid, setIsDataValid] = useState({
         email: false,
@@ -97,13 +101,16 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
         let message = "";
         let isError = false;
 
+        if (data?.userRegister?.id) {
+            alert("Usuario registrado con éxito, por favor inicia sesión.");
+            router.push("/login");
+        }
+
         if (loading) {
             message = "Cargando...";
         } else if (error) {
             message = error.message;
             isError = true;
-        } else if (data) {
-            message = `Bienvenido, ${data.userRegister.firstName}. Por favor inicia sesión.`;
         }
 
         if (message)

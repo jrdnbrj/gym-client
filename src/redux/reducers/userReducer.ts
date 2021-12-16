@@ -4,9 +4,11 @@ const initialState = {
         firstName: undefined,
         lastName: undefined,
         email: undefined,
-        clientID: undefined,
-        instructorID: undefined,
-    }
+        isClient: false,
+        isInstructor: false,
+        isAdmin: false,
+    },
+    currentRole: "client",
 }
 
 type Action = {
@@ -25,6 +27,16 @@ const userReducer = (state = initialState, action: Action) => {
             return {
                 ...state,
                 user: initialState.user,
+            }
+        case "SET_CURRENT_ROLE":
+            return {
+                ...state,
+                currentRole: action.payload,
+            }
+        case "CLEAR_CURRENT_ROLE":
+            return {
+                ...state,
+                currentRole: initialState.currentRole,
             }
         default:
             return state;

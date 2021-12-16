@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { useSelector } from 'react-redux';
 
-import weekScheduleAllMutation from '../graphql/weekScheduleAllQuery';
-import instructorSendEmailMutation from '../graphql/instructorSendEmailMutation';
+import weekScheduleAll from '../graphql/query/weekScheduleAll';
+import instructorSendEmailWeekSchedule from '../graphql/mutation/instructorSendEmailWeekSchedule';
+
 
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -32,7 +33,7 @@ const emojis = {
     MartialArts: '🙅🏻',
 }
 
-const instructor = () => {
+const Instructor = () => {
 
     const user = useSelector(state => state.user.user);
 
@@ -48,9 +49,9 @@ const instructor = () => {
         type: ''
     });
 
-    const { loading, error, data, refetch } = useQuery(weekScheduleAllMutation);
+    const { loading, error, data, refetch } = useQuery(weekScheduleAll);
     const [instructorSendEmail, { loading: loadingEmail }] = useMutation(
-        instructorSendEmailMutation, {
+        instructorSendEmailWeekSchedule, {
             onCompleted: () => {
                 alert('El correo ha sido enviado a todos los alumnos inscritos.');
             },
@@ -180,4 +181,4 @@ const instructor = () => {
 }
 
 
-export default instructor;
+export default Instructor;

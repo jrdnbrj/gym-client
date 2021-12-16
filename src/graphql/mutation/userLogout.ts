@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
-const logoutMutation = gql`
+const userLogout = gql`
     mutation {
         userLogout
     }
 `;
 
-export default logoutMutation;
+export default userLogout;

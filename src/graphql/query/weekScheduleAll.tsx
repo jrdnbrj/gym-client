@@ -1,23 +1,25 @@
 import gql from "graphql-tag";
 
-const weekScheduleAllMutation = gql`
+const weekScheduleAll = gql`
     query {
         weekScheduleAll {
             id
             workoutType
             quotas
+            days
+            startDate
             students {
                 id
-                userID
+                firstName
+                lastName
             }
             instructor {
                 id
-                userID
+                firstName
+                lastName
             }
-            days
-            startDate
         }
     }
 `;
 
-export default weekScheduleAllMutation;
+export default weekScheduleAll;

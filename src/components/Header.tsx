@@ -1,23 +1,27 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useQuery, useMutation } from "@apollo/client";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 
-import logoutMutation from "../graphql/logoutMutation";
-import meQuery from "../graphql/meQuery";
+import userLogout from "../graphql/mutation/userLogout";
+import userMe from "../graphql/query/userMe";
 
 
 const Header = () => {
 
     const router = useRouter();
     const dispatch = useDispatch();
-    const { data, refetch } = useQuery(meQuery);
+
+    const currentRole = useSelector(state => state.user.currentRole);
+
+    const { data, refetch } = useQuery(userMe);
 
     useEffect(() => {
         console.log(data);
@@ -29,32 +33,97 @@ const Header = () => {
                     firstName: data.userMe.firstName,
                     lastName: data.userMe.lastName,
                     email: data.userMe.email,
-                    clientID: data.userMe.client?.id,
-                    instructorID: data.userMe.instructor?.id,
+                    isClient: data.userMe.isClient,
+                    isInstructor: data.userMe.isInstructor,
+                    isAdmin: data.userMe.isAdmin,
                 }
             });
+            
+            if (data?.userMe?.isInstructor)
+                dispatch({ type: "SET_CURRENT_ROLE", payload: 'instructor' });
         }
     }, [data]);
 
-    const [logout] = useMutation(logoutMutation, { 
+    const [logout] = useMutation(userLogout, { 
         onCompleted: (data) => {
             refetch();
             dispatch({ type: 'CLEAR_USER' })
+            dispatch({ type: 'CLEAR_CURRENT_ROLE' })
         }
     });
-    
+
+    const setRole = (role: string) => {
+        dispatch({ type: 'SET_CURRENT_ROLE', payload: role });
+    }
+
+    const UserNameRole = () => {
+        return <>
+            {currentRole === 'client' && <i className="bi bi-person-fill" /> }
+            {currentRole === 'instructor' && <i className="bi bi-person-badge" /> }
+            {currentRole === 'admin' && <i className="bi bi-person-rolodex" /> }
+            <span className="text-white mx-1">
+                {data.userMe.firstName} {data.userMe.lastName}
+            </span>
+        </>
+    }
+
+    const UserRole = () => {
+        return <NavDropdown.Header>
+            <strong>Rol: </strong>
+            {currentRole === 'client' && "Deportista"}
+            {currentRole === 'instructor' && "Instructor"}
+            {currentRole === 'admin' && "Administrador"}
+        </NavDropdown.Header>
+    }
+
     const UserIndicator = (): JSX.Element => {
         let message = "";
 
         if (data?.userMe) {
             return (
                 <Nav>
-                    <span className="header-name">
-                        {data.userMe.firstName} {data.userMe.lastName}
-                    </span>
-                    <Button variant="outline-light ms-2" onClick={() => logout()}>
-                        Cerrar Sesión
-                    </Button>
+                    <Navbar.Collapse id="navbar-dark-example">
+                        <NavDropdown title={<UserNameRole />}>
+                            <UserRole />
+                            <NavDropdown.Divider />
+                            <NavDropdown.Item onClick={() => console.log('Perfil')}>
+                                Perfil
+                            </NavDropdown.Item>
+                            {data.userMe.isInstructor && currentRole !== 'instructor' &&
+                                <NavDropdown.Item onClick={() => setRole('instructor')}>
+                                    Ver Como Instructor
+                                </NavDropdown.Item>
+                            }
+                            {data.userMe.isClient && currentRole !== 'client' &&
+                                <NavDropdown.Item onClick={() => setRole('client')}>
+                                    Ver Como Cliente
+                                </NavDropdown.Item>
+                            }
+                            {data.userMe.isAdmin && currentRole !== 'admin' &&
+                                <NavDropdown.Item onClick={() => setRole('admin')}>
+                                    Ver Como Admin
+                                </NavDropdown.Item>
+                            }
+                            {currentRole === 'admin' &&
+                                <>
+                                    <NavDropdown.Item 
+                                        onClick={() => router.push("/admin/usuarios")}
+                                    >
+                                        Usuarios
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item 
+                                        onClick={() => router.push("/admin/clases")}
+                                    >
+                                        Clases
+                                    </NavDropdown.Item>
+                                </>
+                            }
+                            <NavDropdown.Divider />
+                            <NavDropdown.Item onClick={() => logout()}>
+                                Cerrar Sesión
+                            </NavDropdown.Item>
+                        </NavDropdown>
+                    </Navbar.Collapse>
                 </Nav>
             );
         } else {
@@ -78,29 +147,6 @@ const Header = () => {
     };
 
     const UserLinks = (): JSX.Element => {
-        // if (data?.userMe.client) {
-        //     return <Nav.Link 
-        //         className="text-light" 
-        //         onClick={() => router.push('calendario')}
-        //     >
-        //         Calendario
-        //     </Nav.Link>
-        // } else if (data?.userMe.instructor) {
-        //     return (
-        //         <Nav.Link 
-        //             className="text-light" 
-        //             onClick={() => router.push('instructor')}
-        //         >
-        //             Instructor
-        //         </Nav.Link>
-        //         <Nav.Link 
-        //             className="text-light" 
-        //             onClick={() => router.push('calendario')}
-        //         >
-        //             Calendario
-        //         </Nav.Link>
-        //     );
-        // }
         if (data?.userMe)
             return (
                 <Nav.Link 
@@ -114,7 +160,7 @@ const Header = () => {
     };
 
     return (
-        <Navbar bg="primary" expand="lg">
+        <Navbar bg="primary" expand="lg" variant="dark">
             <Container>
                 <Navbar.Brand className="radikal-logo">
                     <Link href="/">RADIKAL GYM</Link>

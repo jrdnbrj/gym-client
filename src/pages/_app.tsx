@@ -6,7 +6,8 @@ import { AppProps } from "next/app";
 import Layout from "../components/Layout";
 
 import "bootstrap/dist/css/bootstrap.css";
-import '../assets/styles.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "../assets/styles.css";
 
 // TODO: Use the same tsconfig.json in server and client for
 // consistency.

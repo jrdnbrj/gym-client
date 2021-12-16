@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-const weekScheduleAllMutation = gql`
+const userByID = gql`
     query ($userID: ID!) {
         userByID(userID: $userID) {
             firstName
@@ -10,4 +10,4 @@ const weekScheduleAllMutation = gql`
     }
 `;
 
-export default weekScheduleAllMutation;
+export default userByID;

@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-const registerMutation = gql`
+const userRegister = gql`
     mutation (
         $firstName: String!
         $lastName: String!
@@ -8,6 +8,7 @@ const registerMutation = gql`
         $password: String!
         $isClient: Boolean!
         $isInstructor: Boolean!
+        $isAdmin: Boolean!
     ) {
         userRegister(
             firstName: $firstName
@@ -16,6 +17,7 @@ const registerMutation = gql`
             password: $password
             isClient: $isClient
             isInstructor: $isInstructor
+            isAdmin: $isAdmin
         ) {
             id
             firstName
@@ -25,4 +27,4 @@ const registerMutation = gql`
     }
 `;
 
-export default registerMutation;
+export default userRegister;

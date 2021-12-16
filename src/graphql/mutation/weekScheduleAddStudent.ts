@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-const bookClassMutation = gql`
+const weekScheduleAddStudent = gql`
     mutation (
         $clientID: ID!, 
         $weekScheduleID: ID!
@@ -14,4 +14,4 @@ const bookClassMutation = gql`
     }
 `;
 
-export default bookClassMutation;
+export default weekScheduleAddStudent;
