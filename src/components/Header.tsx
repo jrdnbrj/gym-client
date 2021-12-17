@@ -1,14 +1,14 @@
-import Link from 'next/link';
-import { useEffect } from 'react';
+import Link from "next/link";
+import { useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import NavDropdown from 'react-bootstrap/NavDropdown';
+import Navbar from "react-bootstrap/Navbar";
+import Nav from "react-bootstrap/Nav";
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import NavDropdown from "react-bootstrap/NavDropdown";
 
 import userLogout from "../graphql/mutation/userLogout";
 import userMe from "../graphql/query/userMe";
@@ -40,27 +40,28 @@ const Header = () => {
             });
             
             if (data?.userMe?.isInstructor)
-                dispatch({ type: "SET_CURRENT_ROLE", payload: 'instructor' });
+                dispatch({ type: "SET_CURRENT_ROLE", payload: "instructor" });
         }
     }, [data]);
 
     const [logout] = useMutation(userLogout, { 
         onCompleted: (data) => {
             refetch();
-            dispatch({ type: 'CLEAR_USER' })
-            dispatch({ type: 'CLEAR_CURRENT_ROLE' })
+            dispatch({ type: "CLEAR_USER" })
+            dispatch({ type: "CLEAR_CURRENT_ROLE" })
+            router.push("/")
         }
     });
 
     const setRole = (role: string) => {
-        dispatch({ type: 'SET_CURRENT_ROLE', payload: role });
+        dispatch({ type: "SET_CURRENT_ROLE", payload: role });
     }
 
     const UserNameRole = () => {
         return <>
-            {currentRole === 'client' && <i className="bi bi-person-fill" /> }
-            {currentRole === 'instructor' && <i className="bi bi-person-badge" /> }
-            {currentRole === 'admin' && <i className="bi bi-person-rolodex" /> }
+            {currentRole === "client" && <i className="bi bi-person-fill" /> }
+            {currentRole === "instructor" && <i className="bi bi-person-badge" /> }
+            {currentRole === "admin" && <i className="bi bi-person-rolodex" /> }
             <span className="text-white mx-1">
                 {data.userMe.firstName} {data.userMe.lastName}
             </span>
@@ -70,9 +71,9 @@ const Header = () => {
     const UserRole = () => {
         return <NavDropdown.Header>
             <strong>Rol: </strong>
-            {currentRole === 'client' && "Deportista"}
-            {currentRole === 'instructor' && "Instructor"}
-            {currentRole === 'admin' && "Administrador"}
+            {currentRole === "client" && "Deportista"}
+            {currentRole === "instructor" && "Instructor"}
+            {currentRole === "admin" && "Administrador"}
         </NavDropdown.Header>
     }
 
@@ -86,25 +87,25 @@ const Header = () => {
                         <NavDropdown title={<UserNameRole />}>
                             <UserRole />
                             <NavDropdown.Divider />
-                            <NavDropdown.Item onClick={() => console.log('Perfil')}>
+                            <NavDropdown.Item onClick={() => console.log("Perfil")}>
                                 Perfil
                             </NavDropdown.Item>
-                            {data.userMe.isInstructor && currentRole !== 'instructor' &&
-                                <NavDropdown.Item onClick={() => setRole('instructor')}>
+                            {data.userMe.isInstructor && currentRole !== "instructor" &&
+                                <NavDropdown.Item onClick={() => setRole("instructor")}>
                                     Ver Como Instructor
                                 </NavDropdown.Item>
                             }
-                            {data.userMe.isClient && currentRole !== 'client' &&
-                                <NavDropdown.Item onClick={() => setRole('client')}>
+                            {data.userMe.isClient && currentRole !== "client" &&
+                                <NavDropdown.Item onClick={() => setRole("client")}>
                                     Ver Como Cliente
                                 </NavDropdown.Item>
                             }
-                            {data.userMe.isAdmin && currentRole !== 'admin' &&
-                                <NavDropdown.Item onClick={() => setRole('admin')}>
+                            {data.userMe.isAdmin && currentRole !== "admin" &&
+                                <NavDropdown.Item onClick={() => setRole("admin")}>
                                     Ver Como Admin
                                 </NavDropdown.Item>
                             }
-                            {currentRole === 'admin' &&
+                            {currentRole === "admin" &&
                                 <>
                                     <NavDropdown.Item 
                                         onClick={() => router.push("/admin/usuarios")}
@@ -151,7 +152,7 @@ const Header = () => {
             return (
                 <Nav.Link 
                     className="text-light" 
-                    onClick={() => router.push('calendario')}
+                    onClick={() => router.push("/calendario")}
                 >
                     Calendario
                 </Nav.Link>

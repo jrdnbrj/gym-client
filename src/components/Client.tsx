@@ -3,8 +3,8 @@ import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { useSelector } from 'react-redux';
 
 import weekScheduleAll from '../graphql/query/weekScheduleAll';
-import userByID from '../graphql/query/userByID';
 import weekScheduleAddStudent from '../graphql/mutation/weekScheduleAddStudent';
+import clientRemoveReservation from '../graphql/mutation/clientRemoveReservation';
 
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -26,10 +26,10 @@ const types = {
 
 const emojis = {
     Aerobics: '🏃🏻',
-    Stength: '🏋🏼',
+    Stength: '💪🏻',
     Stretch: '🤸',
     Balance: '🧍🏻',
-    MartialArts: '🙅🏻',
+    MartialArts: '🤼🏻',
 }
 
 const Client = () => {
@@ -46,17 +46,16 @@ const Client = () => {
         price: 100,
         scheduleID: 0,
         type: '',
+        instructor: '',
     });
 
-    const { loading, error, data, refetch } = useQuery(weekScheduleAll);
-    const [getInstructor, { loading: loadingUser, data: dataUser }] = useLazyQuery(userByID);
+    const { loading: loadingg, error, data, refetch } = useQuery(weekScheduleAll);
 
     const [bookClass, { loading: loadingBook }] = useMutation(
         weekScheduleAddStudent, {
             onCompleted: () => {
                 refetch();
                 setShowModal(false);
-                alert('Clase reservada con éxito');
             },
             onError: (error) => {
                 console.log(error);
@@ -65,21 +64,40 @@ const Client = () => {
         } 
     );
 
+    const [removeReservation, { loading: loadingRemove }] = useMutation(
+        clientRemoveReservation, {
+            onCompleted: () => {
+                refetch();
+                setShowModal(false);
+            },
+            onError: (error) => {
+                console.log(error);
+                alert('Error eliminando la reserva. Recarga la página e inténtalo de nuevo');
+            }
+        }
+    );
+
     const bookClassSubmit = e => {
         e.preventDefault();
         bookClass({ 
             variables: { 
-                clientID: user.clientID,
+                clientID: user.id,
                 weekScheduleID: classInfo.scheduleID,
             } 
         });
     }
+
+    const remove = () => removeReservation({ variables: { weekScheduleID: classInfo.scheduleID } });
 
     const bookClassComponent = () => {
         return <>
             <Form onSubmit={bookClassSubmit}>
                 <Alert variant="info">
                     <p>Esta clase tiene {classInfo.quotas} cupos disponibles.</p>
+                    <p>
+                        <strong>Instructor: </strong>
+                        {classInfo.instructor}
+                    </p>
                     <p>
                         <strong>Horario: </strong>
                         {classInfo.startDate.split(' ')[4]}
@@ -93,20 +111,21 @@ const Client = () => {
                         $ {classInfo.price}
                     </p>
                 </Alert>
-                <Button className="mt-2" type="submit">Reservar</Button>
+                <Button className="mt-2" type="submit">
+                    {loadingBook && 
+                        <Spinner animation="border" variant="light" size="sm" className="me-1" />}
+                    Reservar
+                </Button>
             </Form>
         </>
     }
 
     const viewClassComponent = () => {
-        if (loadingUser)
-            return <Spinner animation="border" variant="primary" />
-
         return <>
             <ListGroup>
                 <ListGroup.Item>
                     <strong>Instructor: </strong>
-                    {dataUser?.userByID?.firstName} {dataUser?.userByID?.lastName}
+                    {classInfo.instructor}
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <strong>Horario: </strong>
@@ -121,16 +140,23 @@ const Client = () => {
                     $ {classInfo.price}
                 </ListGroup.Item>
             </ListGroup>
+            <Button className="mt-2" onClick={remove}>
+                {loadingRemove && 
+                    <Spinner animation="border" variant="light" size="sm" className="me-1" />}
+                Eliminar Reserva
+            </Button>
         </>
     }
 
-    const openModal = (userID, quotas, startDate, scheduleDates, scheduleID, type, busy) => {
-        setClassInfo({ ...classInfo, userID, quotas, startDate, scheduleDates, scheduleID, type });
+    const openModal = (quotas, startDate, scheduleDates, scheduleID, type, busy, instructor) => {
+        console.log(quotas, startDate, scheduleDates, scheduleID, type, busy, instructor);
+        setClassInfo({ ...classInfo, quotas, startDate, scheduleDates, scheduleID, type, instructor });
+
         if (busy)
             setBusyModal(true);
         else
             setBusyModal(false);
-        getInstructor({ variables: { userID } });
+
         setModalTitle(`Clase de ${types[type]}`);
         setShowModal(true)
     }
@@ -140,7 +166,7 @@ const Client = () => {
         let available = false;
         let unavailable = false;
         let quotas = 0;
-        let userID = '';
+        let instructor = '';
         let startDate = '';
         let scheduleDates = [];
         let scheduleID = '';
@@ -148,22 +174,23 @@ const Client = () => {
 
         data?.weekScheduleAll?.forEach(schedule => {
             if (schedule.days.includes(day[2])) {
-                const schudelTime = new Date(schedule.startDate);
-                const hourStart = schudelTime.getUTCHours().toString();
+                const scheduleTime = new Date(schedule.startDate);
+                const hourStart = scheduleTime.getUTCHours().toString();
 
                 if (hourStart === hour) {
-                    const students = Array.from(schedule.students, student => student.userID);
+                    const students = Array.from(schedule.students, student => student.id);
 
-                    if (students.includes(parseInt(user.id))) {
-                        userID = schedule.instructor.userID;
+                    if (students.includes(user.id)) {
                         busy = true;
                     } else {
                         if (schedule.quotas === 0) unavailable = true;
                         else available = true;
                     }
+                    instructor = schedule.instructor.firstName + 
+                        " " + schedule.instructor.lastName;
                     scheduleID = schedule.id;
                     quotas = schedule.quotas;
-                    startDate = schudelTime.toUTCString();
+                    startDate = scheduleTime.toUTCString();
                     scheduleDates = schedule.days;
                     type = schedule.workoutType;
                 }
@@ -172,9 +199,9 @@ const Client = () => {
 
         const variables = busy => {
             return openModal(
-                userID, quotas, startDate, 
+                quotas, startDate, 
                 scheduleDates, scheduleID, 
-                type, busy
+                type, busy, instructor
             );
         }
 
@@ -205,14 +232,12 @@ const Client = () => {
                 </td>
             )
 
-        return (
-            <td></td>
-        )
+        return <td />
     }
 
     return (
         <div className="mx-3">
-            {loading ? 
+            {loadingg ? 
                 <Spinner animation="border" variant="primary" /> : 
                 <Calendar ClassDay={ClassDay} /> 
             }

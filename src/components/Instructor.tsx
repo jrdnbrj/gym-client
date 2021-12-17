@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import weekScheduleAll from '../graphql/query/weekScheduleAll';
 import instructorSendEmailWeekSchedule from '../graphql/mutation/instructorSendEmailWeekSchedule';
 
-
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Alert from 'react-bootstrap/Alert';
@@ -27,10 +26,10 @@ const types = {
 
 const emojis = {
     Aerobics: '🏃🏻',
-    Stength: '🏋🏼',
+    Stength: '💪🏻',
     Stretch: '🤸',
     Balance: '🧍🏻',
-    MartialArts: '🙅🏻',
+    MartialArts: '🤼🏻',
 }
 
 const Instructor = () => {
@@ -45,7 +44,7 @@ const Instructor = () => {
         startDate: '',
         scheduleDays: [],
         scheduleID: 0,
-        students: 0,
+        students: [],
         type: ''
     });
 
@@ -86,7 +85,7 @@ const Instructor = () => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <strong>Estudiantes: </strong>
-                    {classInfo.students}
+                    {classInfo.students.map(student => student.firstName + " " + student.lastName).join(', ')}
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <FloatingLabel label="Envia un mensaje a tus estudiantes.">
@@ -95,8 +94,6 @@ const Instructor = () => {
                             placeholder="mensaje"
                             style={{ height: '150px' }}
                             id="message"
-                            // value={message}
-                            // onChange={e => setMessage(e.target.value)}
                         />
                     </FloatingLabel>
                     <Button 
@@ -132,13 +129,13 @@ const Instructor = () => {
                 const hourStart = schudelTime.getUTCHours().toString();
 
                 if (hourStart === hour) {
-                    if (schedule.instructor.userID === parseInt(user.id)) {
+                    if (schedule.instructor.id === user.id) {
                         available = true;
                         quotas = schedule.quotas;
                         startDate = schudelTime.toUTCString();
                         scheduleDates = schedule.days;
                         scheduleID = schedule.id;
-                        students = schedule.students.length;
+                        students = schedule.students;
                         type = schedule.workoutType;
                     }
                 }
@@ -161,7 +158,7 @@ const Instructor = () => {
                 </td>
             )
 
-        return <td></td>
+        return <td />
     }
 
     return (

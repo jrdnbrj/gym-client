@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 
 import { useQuery } from "@apollo/client";
-import userAllQuery from "../../graphql/userAllQuery";
+import userAll from "../../graphql/query/userAll";
 
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
@@ -16,15 +16,15 @@ const usuarios = () => {
 
     const currentRole = useSelector(state => state.user.currentRole);
 
-    const { loading, error, data } = useQuery(userAllQuery);
+    const { loading, error, data } = useQuery(userAll);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error :(</p>;
 
-    useEffect(() => {
-        if (currentRole !== 'admin')
-            router.push('/calendario'); 
-    }, [currentRole]);
+    // useEffect(() => {
+    //     if (currentRole !== 'admin')
+    //         router.push('/calendario'); 
+    // }, [currentRole]);
 
     if (data) {
         return (

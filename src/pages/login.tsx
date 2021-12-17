@@ -22,9 +22,8 @@ import workoutImage from "../../public/workout.jpeg";
 import OkFeedback from "../components/OkFeedback";
 import NotOkFeedback from "../components/NotOkFeedback";
 import { useMutation } from "@apollo/client";
-import loginMutation from "../graphql/loginMutation";
-import forgotPasswordMutation from "../graphql/forgotPasswordMutation";
-import changePasswordMutation from "../graphql/changePasswordMutation";
+import userLogin from "../graphql/mutation/userLogin";
+import userForgotPassword from "../graphql/mutation/userForgotPassword";
 
 export interface LoginProps {}
 export interface LoginFormProps {}
@@ -36,11 +35,10 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
     const user = useSelector((state: any) => state.user.user);
 
     useEffect(() => {
-        // if (user.id) router.push("/");
         if (user.id) window.location.href = "/";
     } , [user]);
 
-    const [login, { loading, error, data, reset }] = useMutation(loginMutation, {
+    const [login, { loading, error, data, reset }] = useMutation(userLogin, {
         onCompleted: ({ userLogin }) => {
             dispatch({ type: "SET_USER", user: {
                 id: userLogin.id,
@@ -56,18 +54,9 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
     });
 
     const [forgotPassword, { loading: forgotPasswordLoading }] = useMutation(
-        forgotPasswordMutation, {
+        userForgotPassword, {
         onCompleted: (data) => {
-            alert('El correo ha sido enviado.');
-            console.log(data);
-        },
-        onError: (error) => console.log(error)
-    });
-
-    const [changePassword, { loading: changePasswordLoading }] = useMutation(
-        changePasswordMutation, {
-        onCompleted: (data) => {
-            alert("La contraseña se ha cambiado correctamente. Por favor inicia sesión con tu nueva contraseña.");
+            alert('Te enviamos un correo con un enlace para cambiar tu contraseña.');
             console.log(data);
         },
         onError: (error) => console.log(error)
@@ -120,21 +109,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
 
     const [forgot, setForgot] = useState(false);
 
-    const onChangeForgot = () => {
-        if (!token) {
-            console.log("No Token");
-            forgotPassword({ variables: { userEmail: email } });
-        }
-        else {
-            console.log("token");
-            changePassword({ 
-                variables: { 
-                    newPassword: password, 
-                    token: token 
-                }
-            });
-        } 
-    };
+    const onChangeForgot = () => forgotPassword({ variables: { userEmail: email } });
 
     return (
         <Container>
@@ -180,23 +155,15 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                                 onChange={e => setEmail(e.target.value)} value={email}    
                             />
                         </FloatingLabel>
-                        <FloatingLabel label="Ingresa el token enviado al mail">
-                            <Form.Control type="text" placeholder="Ingresa el token enviado al mail" 
-                                onChange={e => setToken(e.target.value)} value={token}
-                            />
-                        </FloatingLabel>
-                        <FloatingLabel label="Ingresa la nueva contraseña">
-                            <Form.Control type="password" placeholder="Ingresa la nueva contraseña" 
-                                onChange={e => setPassword(e.target.value)} value={password}
-                            />
-                        </FloatingLabel>
                         <Button 
                             variant="primary" 
                             className="my-3"
                             onClick={() => onChangeForgot()}
                         >
-                            {loading ? <Spinner size="sm" /> : ""}
-                            Recuperar Contraseña
+                            {forgotPasswordLoading ? 
+                                <Spinner animation="border" variant="light" size="sm" className="me-1" /> 
+                                : null}
+                            Enviar Email
                         </Button>
                     </>
                 }

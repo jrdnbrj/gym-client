@@ -3,7 +3,6 @@ import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { useSelector } from 'react-redux';
 
 import weekScheduleAll from '../graphql/query/weekScheduleAll';
-import userByID from '../graphql/query/userByID';
 import weekScheduleAddStudent from '../graphql/mutation/weekScheduleAddStudent';
 
 import Spinner from 'react-bootstrap/Spinner';
@@ -26,10 +25,10 @@ const types = {
 
 const emojis = {
     Aerobics: '🏃🏻',
-    Stength: '🏋🏼',
+    Stength: '💪🏻',
     Stretch: '🤸',
     Balance: '🧍🏻',
-    MartialArts: '🙅🏻',
+    MartialArts: '🤼🏻',
 }
 
 const Client = () => {
@@ -38,7 +37,6 @@ const Client = () => {
 
     const [showModal, setShowModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
-    const [busyModal, setBusyModal] = useState(false);
     const [classInfo, setClassInfo] = useState({
         quotas: 0,
         startDate: '',
@@ -46,10 +44,11 @@ const Client = () => {
         price: 100,
         scheduleID: 0,
         type: '',
+        instructor: '',
+        students: [],
     });
 
     const { loading, error, data, refetch } = useQuery(weekScheduleAll);
-    const [getInstructor, { loading: loadingUser, data: dataUser }] = useLazyQuery(userByID);
 
     const [bookClass, { loading: loadingBook }] = useMutation(
         weekScheduleAddStudent, {
@@ -75,38 +74,21 @@ const Client = () => {
         });
     }
 
-    const bookClassComponent = () => {
-        return <>
-            <Form onSubmit={bookClassSubmit}>
-                <Alert variant="info">
-                    <p>Esta clase tiene {classInfo.quotas} cupos disponibles.</p>
-                    <p>
-                        <strong>Horario: </strong>
-                        {classInfo.startDate.split(' ')[4]}
-                    </p>
-                    <p>
-                        <strong>Días de clases: </strong>
-                        {classInfo.scheduleDates.join(', ')}
-                    </p>
-                    <p>
-                        <strong>Precio Mensual: </strong>
-                        $ {classInfo.price}
-                    </p>
-                </Alert>
-                <Button className="mt-2" type="submit">Reservar</Button>
-            </Form>
-        </>
-    }
-
     const viewClassComponent = () => {
-        if (loadingUser)
-            return <Spinner animation="border" variant="primary" />
-
         return <>
             <ListGroup>
                 <ListGroup.Item>
+                    <strong>Cupos: </strong>
+                    {classInfo.quotas}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                    <strong>Estudiantes: </strong>
+                    {classInfo.students.length === 0 && <span>No hay estudiantes inscritos</span>}
+                    {classInfo.students.map(student => student.firstName + " " + student.lastName).join(', ')}
+                </ListGroup.Item>
+                <ListGroup.Item>
                     <strong>Instructor: </strong>
-                    {dataUser?.userByID?.firstName} {dataUser?.userByID?.lastName}
+                    {classInfo.instructor}
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <strong>Horario: </strong>
@@ -124,27 +106,22 @@ const Client = () => {
         </>
     }
 
-    const openModal = (userID, quotas, startDate, scheduleDates, scheduleID, type, busy) => {
-        setClassInfo({ ...classInfo, userID, quotas, startDate, scheduleDates, scheduleID, type });
-        if (busy)
-            setBusyModal(true);
-        else
-            setBusyModal(false);
-        getInstructor({ variables: { userID } });
+    const openModal = (quotas, startDate, scheduleDates, scheduleID, type, busy, instructor, students) => {
+        console.log(quotas, startDate, scheduleDates, scheduleID, type, busy, instructor, students);
+        setClassInfo({ ...classInfo, quotas, startDate, scheduleDates, scheduleID, type, instructor, students });
         setModalTitle(`Clase de ${types[type]}`);
         setShowModal(true)
     }
 
     const ClassDay = ({ i, j, day, hour }) => {
-        let busy = false;
         let available = false;
-        let unavailable = false;
         let quotas = 0;
-        let userID = '';
         let startDate = '';
         let scheduleDates = [];
         let scheduleID = '';
         let type = '';
+        let instructor = '';
+        let students = [];
 
         data?.weekScheduleAll?.forEach(schedule => {
             if (schedule.days.includes(day[2])) {
@@ -152,40 +129,26 @@ const Client = () => {
                 const hourStart = schudelTime.getUTCHours().toString();
 
                 if (hourStart === hour) {
-                    const students = Array.from(schedule.students, student => student.userID);
-
-                    if (students.includes(parseInt(user.id))) {
-                        userID = schedule.instructor.userID;
-                        busy = true;
-                    } else {
-                        if (schedule.quotas === 0) unavailable = true;
-                        else available = true;
-                    }
+                    students = schedule.students;
+                    instructor = schedule.instructor.firstName + 
+                        " " + schedule.instructor.lastName;
                     scheduleID = schedule.id;
                     quotas = schedule.quotas;
                     startDate = schudelTime.toUTCString();
                     scheduleDates = schedule.days;
                     type = schedule.workoutType;
+                    available = true;
                 }
             }
         })
 
         const variables = busy => {
             return openModal(
-                userID, quotas, startDate, 
+                quotas, startDate, 
                 scheduleDates, scheduleID, 
-                type, busy
+                type, busy, instructor, students
             );
         }
-
-        if (busy) 
-            return (
-                <td className="busy">
-                    <div onClick={() => variables(true)}>
-                        {emojis[type]}
-                    </div>
-                </td>
-            )
         
         if (available)
             return (
@@ -196,18 +159,7 @@ const Client = () => {
                 </td>
             )
 
-        if (unavailable)
-            return (
-                <td className="unavailable" title="No hay cupos.">
-                    <div>
-                        {emojis[type]}
-                    </div>
-                </td>
-            )
-
-        return (
-            <td></td>
-        )
+        return <td />
     }
 
     return (
@@ -220,7 +172,7 @@ const Client = () => {
                 show={showModal}
                 onHide={() => setShowModal(false)} 
                 header={modalTitle}
-                ModalBody={busyModal ? viewClassComponent : bookClassComponent}
+                ModalBody={viewClassComponent}
             />
         </div>  
     )
