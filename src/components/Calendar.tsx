@@ -27,7 +27,7 @@ const Calendar = ({ user, ClassDay }) => {
     const [day, setDay] = useState(date.getDay() - 1);
     const [today, setToday] = useState(date.getDate());
 
-    const GetDay = ({ i }) => {
+    const getDay = i => {
         let num;
 
         if (day === i)
@@ -40,7 +40,7 @@ const Calendar = ({ user, ClassDay }) => {
                 num -= month[2];
         }
 
-        return <span className="day">{num}</span>
+        return num
     }
 
     return <>
@@ -54,7 +54,8 @@ const Calendar = ({ user, ClassDay }) => {
                     {days.map((day, i) => {
                         return (
                             <th key={i}>
-                                <GetDay i={i} />
+                                {/* <GetDay i={i} /> */}
+                                <span className="day">{getDay(i)}</span>
                                 <span className="long">{day[0]}</span>
                                 <span className="short">{day[1]}</span>
                             </th>
@@ -67,17 +68,15 @@ const Calendar = ({ user, ClassDay }) => {
                     return (
                         <tr key={i}>
                             <td className="hour">{hour}</td>
-                            {days.map((day, j) => {
-                                return (
-                                    <ClassDay 
-                                        key={j} 
-                                        i={i} 
-                                        j={j} 
-                                        day={day} 
-                                        hour={hour.split(':')[0]} 
-                                    />
-                                )
-                            })}
+                            {days.map((day, j) => 
+                                <ClassDay 
+                                    key={j} 
+                                    day={day}
+                                    today={getDay(j)}
+                                    month={monthNumber}
+                                    hour={hour.split(':')[0]} 
+                                /> 
+                            )}
                         </tr>
                     )
                 })}

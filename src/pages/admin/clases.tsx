@@ -57,6 +57,7 @@ const clases = () => {
         {
             onCompleted: () => {
                 alert("La clase se ha creado con éxito.");
+                setFormValid(false);
                 setFormData({
                     type: "",
                     instructorID: "",
@@ -66,7 +67,7 @@ const clases = () => {
                 reset();
             },
             onError: error => {
-                console.log("createSchedule Error:", error);
+                console.log("createSchedule Error:", error.message);
                 setMsgError("Error al crear la clase. Inténtalo de nuevo.");
             }
         }

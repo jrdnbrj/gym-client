@@ -187,3 +187,11 @@
 .recover {
 	padding: 30%;
 }
+
+.attendance-checkbox {
+	float: right;
+}
+
+.user-list button {
+	float: right;
+}

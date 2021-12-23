@@ -161,7 +161,7 @@ const Client = () => {
         setShowModal(true)
     }
 
-    const ClassDay = ({ i, j, day, hour }) => {
+    const ClassDay = ({ day, hour }) => {
         let busy = false;
         let available = false;
         let unavailable = false;

@@ -113,7 +113,7 @@ const Client = () => {
         setShowModal(true)
     }
 
-    const ClassDay = ({ i, j, day, hour }) => {
+    const ClassDay = ({ day, hour }) => {
         let available = false;
         let quotas = 0;
         let startDate = '';
