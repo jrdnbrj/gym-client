@@ -11,38 +11,11 @@ import Button from "react-bootstrap/Button";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
 import userLogout from "../graphql/mutation/userLogout";
-import userMe from "../graphql/query/userMe";
 
 
-const Header = () => {
-
+const Header = ({ user, role }) => {
     const router = useRouter();
     const dispatch = useDispatch();
-
-    const currentRole = useSelector(state => state.user.currentRole);
-
-    const { data, refetch } = useQuery(userMe);
-
-    useEffect(() => {
-        console.log(data);
-        if (data?.userMe) {
-            dispatch({ 
-                type: "SET_USER", 
-                user: {
-                    id: data.userMe.id,
-                    firstName: data.userMe.firstName,
-                    lastName: data.userMe.lastName,
-                    email: data.userMe.email,
-                    isClient: data.userMe.isClient,
-                    isInstructor: data.userMe.isInstructor,
-                    isAdmin: data.userMe.isAdmin,
-                }
-            });
-            
-            if (data?.userMe?.isInstructor)
-                dispatch({ type: "SET_CURRENT_ROLE", payload: "instructor" });
-        }
-    }, [data]);
 
     const [logout] = useMutation(userLogout, { 
         onCompleted: (data) => {
@@ -53,17 +26,15 @@ const Header = () => {
         }
     });
 
-    const setRole = (role: string) => {
-        dispatch({ type: "SET_CURRENT_ROLE", payload: role });
-    }
+    const setRole = role => dispatch({ type: "SET_CURRENT_ROLE", payload: role });
 
     const UserNameRole = () => {
         return <>
-            {currentRole === "client" && <i className="bi bi-person-fill" /> }
-            {currentRole === "instructor" && <i className="bi bi-person-badge" /> }
-            {currentRole === "admin" && <i className="bi bi-person-rolodex" /> }
+            {role === "client" && <i className="bi bi-person-fill" /> }
+            {role === "instructor" && <i className="bi bi-person-badge" /> }
+            {role === "admin" && <i className="bi bi-person-rolodex" /> }
             <span className="text-white mx-1">
-                {data.userMe.firstName} {data.userMe.lastName}
+                {user.firstName} {user.lastName}
             </span>
         </>
     }
@@ -71,16 +42,16 @@ const Header = () => {
     const UserRole = () => {
         return <NavDropdown.Header>
             <strong>Rol: </strong>
-            {currentRole === "client" && "Deportista"}
-            {currentRole === "instructor" && "Instructor"}
-            {currentRole === "admin" && "Administrador"}
+            {role === "client" && "Deportista"}
+            {role === "instructor" && "Instructor"}
+            {role === "admin" && "Administrador"}
         </NavDropdown.Header>
     }
 
     const UserIndicator = (): JSX.Element => {
         let message = "";
 
-        if (data?.userMe) {
+        if (user.id) {
             return (
                 <Nav>
                     <Navbar.Collapse id="navbar-dark-example">
@@ -90,22 +61,22 @@ const Header = () => {
                             <NavDropdown.Item onClick={() => console.log("Perfil")}>
                                 Perfil
                             </NavDropdown.Item>
-                            {data.userMe.isInstructor && currentRole !== "instructor" &&
+                            {user.isInstructor && role !== "instructor" &&
                                 <NavDropdown.Item onClick={() => setRole("instructor")}>
                                     Ver Como Instructor
                                 </NavDropdown.Item>
                             }
-                            {data.userMe.isClient && currentRole !== "client" &&
+                            {user.isClient && role !== "client" &&
                                 <NavDropdown.Item onClick={() => setRole("client")}>
                                     Ver Como Cliente
                                 </NavDropdown.Item>
                             }
-                            {data.userMe.isAdmin && currentRole !== "admin" &&
+                            {user.isAdmin && role !== "admin" &&
                                 <NavDropdown.Item onClick={() => setRole("admin")}>
                                     Ver Como Admin
                                 </NavDropdown.Item>
                             }
-                            {currentRole === "admin" &&
+                            {role === "admin" &&
                                 <>
                                     <NavDropdown.Item 
                                         onClick={() => router.push("/admin/usuarios")}
@@ -148,16 +119,24 @@ const Header = () => {
     };
 
     const UserLinks = (): JSX.Element => {
-        if (data?.userMe)
-            return (
+        if (!user) return null;
+        
+        return (
+            <Nav className="me-auto">
                 <Nav.Link 
                     className="text-light" 
                     onClick={() => router.push("/calendario")}
                 >
                     Calendario
                 </Nav.Link>
-            )
-        else return null;
+                <Nav.Link 
+                    className="text-light" 
+                    onClick={() => router.push("/streaming")}
+                >
+                    Streaming
+                </Nav.Link>
+            </Nav>
+        )
     };
 
     return (
@@ -168,9 +147,7 @@ const Header = () => {
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        <UserLinks />
-                    </Nav>
+                    <UserLinks />
                     <UserIndicator />
                 </Navbar.Collapse>
             </Container>

@@ -4,7 +4,10 @@ const weekScheduleAll = gql`
     query {
         weekScheduleAll {
             id
-            workoutType
+            workoutType {
+                name
+                emoji
+            }
             quotas
             days
             startDate

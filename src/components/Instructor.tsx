@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import weekScheduleAll from "../graphql/query/weekScheduleAll";
 import instructorSendEmailWeekSchedule from "../graphql/mutation/instructorSendEmailWeekSchedule";
 import attendanceRecordAll from "../graphql/query/attendanceRecordAll";
 import attendanceRecordCreate from "../graphql/mutation/attendanceRecordCreate";
@@ -20,23 +19,7 @@ import Calendar from "../components/Calendar";
 import Modal from "../components/Modal";
 
 
-const types = {
-    Aerobics: "Aerobicos",
-    Stength: "Fuerza",
-    Stretch: "Estiramiento",
-    Balance: "Balance",
-    MartialArts: "Artes Marciales",
-}
-
-const emojis = {
-    Aerobics: "🏃🏻",
-    Stength: "💪🏻",
-    Stretch: "🤸",
-    Balance: "🧍🏻",
-    MartialArts: "🤼🏻",
-}
-
-const Instructor = () => {
+const Instructor = ({ classes }) => {
 
     const user = useSelector(state => state.user.user);
 
@@ -54,7 +37,6 @@ const Instructor = () => {
         attendedIDs: [],
     });
 
-    const { loading, error, data } = useQuery(weekScheduleAll);
     const { loading: attendanceLoading, data: attendanceData, refetch } = useQuery(attendanceRecordAll);
     const [instructorSendEmail, { loading: loadingEmail }] = useMutation(
         instructorSendEmailWeekSchedule, {
@@ -104,7 +86,7 @@ const Instructor = () => {
 
     const sendEmail = () => {
         const message = document.getElementById("message").value;
-
+        console.log(classInfo.scheduleID, message);
         instructorSendEmail({
             variables: {
                 weekScheduleID: classInfo.scheduleID,
@@ -115,7 +97,7 @@ const Instructor = () => {
 
     const attendanceToday = date => {
         const todayDate = new Date(date);
-
+        
         if (todayDate.getUTCDate() === classInfo.today && 
             todayDate.getUTCMonth() === classInfo.month)
             return true;
@@ -124,6 +106,48 @@ const Instructor = () => {
     }
 
     const GetAttendance = () => {
+
+        if (classInfo.students.length < 1)
+            return <span>Aún no hay estudiantes registrados</span>;
+
+        if (attendanceLoading)
+            return <Spinner animation="border" variant="primary" />;
+
+        return attendanceData?.attendanceRecordAll?.map(item => {
+            if (item.weekSchedule.id !== parseInt(classInfo.scheduleID))
+                return null;
+
+            return item.attendance.map((attendance, i) => {
+                return classInfo.students.map(student => {
+                    if (attendance.studentID === parseInt(student.id)) {
+                        if (attendanceToday(item.date)) {
+                            if (attendance.attended) {
+                                return (
+                                    <span key={i}>
+                                        {student.firstName} {student.lastName}✔️{". "}
+                                    </span>
+                                );
+                            } else {
+                                return (
+                                    <span key={i}>
+                                        {student.firstName} {student.lastName}❌{". "}
+                                    </span>
+                                );
+                            }
+                        } else {
+                            return (
+                                <span key={i}>
+                                    {student.firstName} {student.lastName}{". "}
+                                </span>
+                            );
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    const GetAttendanceeee = () => {
 
         if (classInfo.students.length < 1)
             return <span>Aún no hay estudiantes registrados</span>;
@@ -289,12 +313,14 @@ const Instructor = () => {
         quotas, startDate, scheduleDates, scheduleID, 
         students, type, today, month
     ) => {
+        // console.log('attendanceData', attendanceData.attendanceRecordAll.filter(item => 
+        //     (item.weekSchedule.id === parseInt(scheduleID))))
         attendanceCreate({ variables: { weekScheduleID: scheduleID } });
         setClassInfo({ 
             ...classInfo, quotas, startDate, scheduleDates, 
             scheduleID, students, type, today, month 
         });
-        setModalTitle(`Clase de ${types[type]}`);
+        setModalTitle(`Clase de ${type}`);
         setShowModal(true)
     }
 
@@ -306,8 +332,9 @@ const Instructor = () => {
         let scheduleID = "";
         let students = 0;
         let type = "";
+        let typeEmoji = "";
 
-        data?.weekScheduleAll?.forEach(schedule => {
+        classes.forEach(schedule => {
             if (schedule.days.includes(day[2])) {
                 const schudelTime = new Date(schedule.startDate);
                 const hourStart = schudelTime.getUTCHours().toString();
@@ -320,7 +347,8 @@ const Instructor = () => {
                         scheduleDates = schedule.days;
                         scheduleID = schedule.id;
                         students = schedule.students;
-                        type = schedule.workoutType;
+                        type = schedule.workoutType.name;
+                        typeEmoji = schedule.workoutType.emoji;
                     }
                 }
             }
@@ -337,7 +365,7 @@ const Instructor = () => {
             return (
                 <td className="available">
                     <div onClick={variables}>
-                        {emojis[type]}
+                        {typeEmoji}
                     </div>
                 </td>
             )
@@ -361,10 +389,7 @@ const Instructor = () => {
 
     return (
         <div className="mx-3">
-            {loading ? 
-                <Spinner animation="border" variant="primary" /> : 
-                <Calendar ClassDay={ClassDay} />
-            }
+            <Calendar ClassDay={ClassDay} />
             <Modal 
                 show={showModal}
                 onHide={handleHideModal} 

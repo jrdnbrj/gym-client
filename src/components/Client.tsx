@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { useSelector } from 'react-redux';
 
-import weekScheduleAll from '../graphql/query/weekScheduleAll';
 import weekScheduleAddStudent from '../graphql/mutation/weekScheduleAddStudent';
 import clientRemoveReservation from '../graphql/mutation/clientRemoveReservation';
 
@@ -16,23 +15,7 @@ import Calendar from '../components/Calendar';
 import Modal from "../components/Modal";
 
 
-const types = {
-    Aerobics: 'Aerobicos',
-    Stength: 'Fuerza',
-    Stretch: 'Estiramiento',
-    Balance: 'Balance',
-    MartialArts: 'Artes Marciales',
-}
-
-const emojis = {
-    Aerobics: '🏃🏻',
-    Stength: '💪🏻',
-    Stretch: '🤸',
-    Balance: '🧍🏻',
-    MartialArts: '🤼🏻',
-}
-
-const Client = () => {
+const Client = ({ classes, refetch }) => {
 
     const user = useSelector(state => state.user.user);
 
@@ -49,7 +32,6 @@ const Client = () => {
         instructor: '',
     });
 
-    const { loading: loadingg, error, data, refetch } = useQuery(weekScheduleAll);
 
     const [bookClass, { loading: loadingBook }] = useMutation(
         weekScheduleAddStudent, {
@@ -149,7 +131,6 @@ const Client = () => {
     }
 
     const openModal = (quotas, startDate, scheduleDates, scheduleID, type, busy, instructor) => {
-        console.log(quotas, startDate, scheduleDates, scheduleID, type, busy, instructor);
         setClassInfo({ ...classInfo, quotas, startDate, scheduleDates, scheduleID, type, instructor });
 
         if (busy)
@@ -157,7 +138,7 @@ const Client = () => {
         else
             setBusyModal(false);
 
-        setModalTitle(`Clase de ${types[type]}`);
+        setModalTitle(`Clase de ${type}`);
         setShowModal(true)
     }
 
@@ -171,8 +152,9 @@ const Client = () => {
         let scheduleDates = [];
         let scheduleID = '';
         let type = '';
+        let typeEmoji = '';
 
-        data?.weekScheduleAll?.forEach(schedule => {
+        classes.forEach(schedule => {
             if (schedule.days.includes(day[2])) {
                 const scheduleTime = new Date(schedule.startDate);
                 const hourStart = scheduleTime.getUTCHours().toString();
@@ -192,7 +174,8 @@ const Client = () => {
                     quotas = schedule.quotas;
                     startDate = scheduleTime.toUTCString();
                     scheduleDates = schedule.days;
-                    type = schedule.workoutType;
+                    type = schedule.workoutType.name;
+                    typeEmoji = schedule.workoutType.emoji;
                 }
             }
         })
@@ -209,7 +192,7 @@ const Client = () => {
             return (
                 <td className="busy">
                     <div onClick={() => variables(true)}>
-                        {emojis[type]}
+                        {typeEmoji}
                     </div>
                 </td>
             )
@@ -218,7 +201,7 @@ const Client = () => {
             return (
                 <td className="available">
                     <div onClick={() => variables(false)}>
-                        {emojis[type]}
+                        {typeEmoji}
                     </div>
                 </td>
             )
@@ -227,7 +210,7 @@ const Client = () => {
             return (
                 <td className="unavailable" title="No hay cupos.">
                     <div>
-                        {emojis[type]}
+                        {typeEmoji}
                     </div>
                 </td>
             )
@@ -237,10 +220,7 @@ const Client = () => {
 
     return (
         <div className="mx-3">
-            {loadingg ? 
-                <Spinner animation="border" variant="primary" /> : 
-                <Calendar ClassDay={ClassDay} /> 
-            }
+            <Calendar ClassDay={ClassDay} /> 
             <Modal 
                 show={showModal}
                 onHide={() => setShowModal(false)} 

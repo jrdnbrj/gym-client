@@ -1,23 +1,22 @@
-import { Provider } from "react-redux";
 import { store } from "../redux/index";
-import { ApolloProvider } from "@apollo/client/react";
+import { Provider } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+
 import { client } from "../apolloClient";
-import { AppProps } from "next/app";
+import { ApolloProvider } from "@apollo/client/react";
+
 import Layout from "../components/Layout";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../assets/styles.css";
 
-// TODO: Use the same tsconfig.json in server and client for
-// consistency.
-const MyApp = ({ Component, pageProps }: AppProps): JSX.Element => {
+
+const MyApp = ({ Component, pageProps }): JSX.Element => {
     return (
         <ApolloProvider client={client}>
             <Provider store={store}>
-                <Layout>
-                    <Component {...pageProps} />
-                </Layout>
+                <Layout Component={Component} pageProps={pageProps} />
             </Provider>
         </ApolloProvider>
     );

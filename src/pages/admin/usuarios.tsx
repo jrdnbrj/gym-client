@@ -11,6 +11,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+
 
 const usuarios = () => {
 
@@ -19,9 +21,9 @@ const usuarios = () => {
     const currentRole = useSelector(state => state.user.currentRole);
 
     const { loading, error, data, refetch } = useQuery(userAll);
-    const [UserRoles] = useMutation(adminUserRoles, {
+    const [userRoles] = useMutation(adminUserRoles, {
         onCompleted: () => {
-            alert("Los roles se han actualizado con éxito.");
+            // alert("Los roles se han actualizado con éxito.");
             refetch();
         },
         onError: error => {
@@ -29,13 +31,42 @@ const usuarios = () => {
         }
     });
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error :(</p>;
+    if (loading)
+        return (
+            <div className="loading-calendar">
+                <Spinner animation="border" />
+                <span>Cargando usuarios...</span>
+            </div>
+        )
 
     // useEffect(() => {
     //     if (currentRole !== 'admin')
     //         router.push('/calendario'); 
     // }, [currentRole]);
+
+    const handleAddRole = (userID, isAdmin, name) => {
+        const isClient = true;
+        const isInstructor = true;
+        let message = "";
+
+        if (isAdmin)
+            message = 
+                `¿Estás seguro que deseas agregar el rol de administrador a ${name}? 
+                
+                Esta acción no se puede deshacer.`;
+        else
+            message = 
+                `¿Estás seguro que deseas agregar el rol de instructor a ${name}?
+                
+                Esta acción no se puede deshacer.`;
+
+        if (confirm(message)) {
+            console.log('add role');
+            userRoles({ variables: { userID, isClient, isInstructor, isAdmin } });
+        } else {
+            console.log('cancel');
+        }
+    }
 
     if (data) {
         return (
@@ -47,18 +78,18 @@ const usuarios = () => {
                                 <strong>Deportistas</strong>
                             </ListGroup.Item>
                             {data.userAll.map(user => {
+                                const name = `${user.firstName} ${user.lastName}`;
                                 if (user.isClient)
                                     return <ListGroup.Item key={user.id} className="user-list">
-                                        {user.firstName} {user.lastName}
-                                        {/* <Button variant="success" size="sm" className="mx-1" title="">
-                                            <i className="bi bi-person-fill" />
-                                        </Button> */}
-                                        {/* <Button variant="primary" size="sm" className="mx-1">
-                                            <i className="bi bi-person-badge" />
-                                        </Button>
-                                        <Button variant="secondary" size="sm" className="mx-1">
-                                            <i className="bi bi-person-rolodex" />
-                                        </Button> */}
+                                        {name}
+                                        {!user.isInstructor &&
+                                            <Button 
+                                                variant="success" title="hacer instructor" className="mx-1"
+                                                size="sm" onClick={() => handleAddRole(parseInt(user.id), false, name)}
+                                            >
+                                                <i className="bi bi-person-badge" />
+                                            </Button>
+                                        }
                                     </ListGroup.Item>
                                 else return null
                             })}
@@ -70,9 +101,18 @@ const usuarios = () => {
                                 <strong>Instructores</strong>
                             </ListGroup.Item>
                             {data.userAll.map(user => {
+                                const name = `${user.firstName} ${user.lastName}`;
                                 if (user.isInstructor)
-                                    return <ListGroup.Item key={user.id}>
-                                        {user.firstName} {user.lastName}
+                                    return <ListGroup.Item key={user.id} className="user-list">
+                                        {name}
+                                        {!user.isAdmin &&
+                                            <Button 
+                                                variant="primary" title="hacer administrador" className="mx-1"
+                                                size="sm" onClick={() => handleAddRole(parseInt(user.id), true, name)}
+                                            >
+                                                <i className="bi bi-person-rolodex" />
+                                            </Button>
+                                        }
                                     </ListGroup.Item>
                                 else return null
                             })}

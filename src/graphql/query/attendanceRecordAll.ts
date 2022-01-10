@@ -5,8 +5,6 @@ const attendanceRecordAll = gql`
         attendanceRecordAll {
             weekSchedule {
                 id
-                startDate
-                workoutType
                 students {
                     firstName
                 }

@@ -2,9 +2,9 @@ import gql from "graphql-tag";
 
 const weekScheduleCreate = gql`
     mutation (
-        $type: WorkoutType!,
+        $type: String!,
         $instructorID: ID!,
-        $startDate: DateInput!, 
+        $startDate: String!, 
         $weekDays: [Weekday!]!,
     ) {
         weekScheduleCreate(

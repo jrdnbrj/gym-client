@@ -1,9 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { useSelector } from 'react-redux';
-
-import weekScheduleAll from '../graphql/query/weekScheduleAll';
-import weekScheduleAddStudent from '../graphql/mutation/weekScheduleAddStudent';
 
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -15,23 +11,7 @@ import Calendar from '../components/Calendar';
 import Modal from "../components/Modal";
 
 
-const types = {
-    Aerobics: 'Aerobicos',
-    Stength: 'Fuerza',
-    Stretch: 'Estiramiento',
-    Balance: 'Balance',
-    MartialArts: 'Artes Marciales',
-}
-
-const emojis = {
-    Aerobics: '🏃🏻',
-    Stength: '💪🏻',
-    Stretch: '🤸',
-    Balance: '🧍🏻',
-    MartialArts: '🤼🏻',
-}
-
-const Client = () => {
+const Client = ({ classes, refetch }) => {
 
     const user = useSelector(state => state.user.user);
 
@@ -47,32 +27,6 @@ const Client = () => {
         instructor: '',
         students: [],
     });
-
-    const { loading, error, data, refetch } = useQuery(weekScheduleAll);
-
-    const [bookClass, { loading: loadingBook }] = useMutation(
-        weekScheduleAddStudent, {
-            onCompleted: () => {
-                refetch();
-                setShowModal(false);
-                alert('Clase reservada con éxito');
-            },
-            onError: (error) => {
-                console.log(error);
-                alert('Error al reservar clase. Recarga la página e inténtalo de nuevo');
-            }
-        } 
-    );
-
-    const bookClassSubmit = e => {
-        e.preventDefault();
-        bookClass({ 
-            variables: { 
-                clientID: user.clientID,
-                weekScheduleID: classInfo.scheduleID,
-            } 
-        });
-    }
 
     const viewClassComponent = () => {
         return <>
@@ -107,9 +61,8 @@ const Client = () => {
     }
 
     const openModal = (quotas, startDate, scheduleDates, scheduleID, type, busy, instructor, students) => {
-        console.log(quotas, startDate, scheduleDates, scheduleID, type, busy, instructor, students);
         setClassInfo({ ...classInfo, quotas, startDate, scheduleDates, scheduleID, type, instructor, students });
-        setModalTitle(`Clase de ${types[type]}`);
+        setModalTitle(`Clase de ${type}`);
         setShowModal(true)
     }
 
@@ -120,10 +73,11 @@ const Client = () => {
         let scheduleDates = [];
         let scheduleID = '';
         let type = '';
+        let typeEmoji = '';
         let instructor = '';
         let students = [];
 
-        data?.weekScheduleAll?.forEach(schedule => {
+        classes.forEach(schedule => {
             if (schedule.days.includes(day[2])) {
                 const schudelTime = new Date(schedule.startDate);
                 const hourStart = schudelTime.getUTCHours().toString();
@@ -136,7 +90,8 @@ const Client = () => {
                     quotas = schedule.quotas;
                     startDate = schudelTime.toUTCString();
                     scheduleDates = schedule.days;
-                    type = schedule.workoutType;
+                    type = schedule.workoutType.name;
+                    typeEmoji = schedule.workoutType.emoji;
                     available = true;
                 }
             }
@@ -154,7 +109,7 @@ const Client = () => {
             return (
                 <td className="available">
                     <div onClick={() => variables(false)}>
-                        {emojis[type]}
+                        {typeEmoji}
                     </div>
                 </td>
             )
@@ -164,10 +119,7 @@ const Client = () => {
 
     return (
         <div className="mx-3">
-            {loading ? 
-                <Spinner animation="border" variant="primary" /> : 
-                <Calendar ClassDay={ClassDay} /> 
-            }
+            <Calendar ClassDay={ClassDay} /> 
             <Modal 
                 show={showModal}
                 onHide={() => setShowModal(false)} 
