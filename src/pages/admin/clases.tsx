@@ -11,6 +11,8 @@ import workoutTypeAll from "../../graphql/query/workoutTypeAll";
 
 import CreateClass from "../../components/CreateClass";
 import WorkoutTypes from "../../components/WorkoutTypes";
+import Loading from "../../components/Loading";
+
 
 const clases = () => {
 
@@ -27,20 +29,10 @@ const clases = () => {
     }, [currentRole]);
 
     if (loading)
-        return (
-            <div className="loading-calendar">
-                <Spinner animation="border" />
-                <span>Cargando Tipos de Clases</span>
-            </div>
-        )
+        return <Loading name="Tipos de Clases" />;
 
     if (loadingUsers)
-        return (
-            <div className="loading-calendar">
-                <Spinner animation="border" />
-                <span>Cargando Usuarios</span>
-            </div>
-        )
+        return <Loading name="Usuarios" />;
 
     return (
         <Container>

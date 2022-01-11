@@ -13,6 +13,8 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 
+import Loading from "../../components/Loading";
+
 
 const usuarios = () => {
 
@@ -32,12 +34,7 @@ const usuarios = () => {
     });
 
     if (loading)
-        return (
-            <div className="loading-calendar">
-                <Spinner animation="border" />
-                <span>Cargando usuarios...</span>
-            </div>
-        )
+        return <Loading name="Usuarios" />;
 
     // useEffect(() => {
     //     if (currentRole !== 'admin')

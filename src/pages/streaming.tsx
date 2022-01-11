@@ -2,6 +2,8 @@ import { useEffect } from "react";
 
 import { Jutsu } from "react-jutsu";
 
+import Loading from "../components/Loading";
+
 // https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-iframe
 // https://github.com/jitsi/jitsi-meet/blob/master/config.js
 // https://github.com/jitsi/jitsi-meet/blob/master/interface_config.js
@@ -33,7 +35,7 @@ const Streaming = ({ user, role }) => {
         displayName,
         subject: 'Clase Online Gratuita',
         onMeetingEnd: () => console.log('Meeting has ended'),
-        loadingComponent: <p>loading ...</p>,
+        loadingComponent: <Loading name="Streaming" />,
         errorComponent: <p>Oops, something went wrong</p>,
         configOverwrite: role === 'instructor' ? instructorConfig : clientConfig
     }

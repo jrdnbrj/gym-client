@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client";
 import Client from "../components/Client";
 import Instructor from "../components/Instructor";
 import Admin from "../components/Admin";
+import Loading from "../components/Loading";
 
 import weekScheduleAll from "../graphql/query/weekScheduleAll";
 
@@ -20,10 +21,7 @@ const Calendario = () => {
 
     const PageByRole = () => {
         if (loading && !data) 
-            return <div className="loading-calendar">
-                <Spinner animation="border" />
-                <span>Cargando Calendario...</span>
-            </div>;
+            return <Loading name="Calendario" />;
 
         if (currentRole === 'instructor')
             return <Instructor classes={data.weekScheduleAll} />;
