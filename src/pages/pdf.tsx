@@ -1,5 +1,6 @@
-import { useRouter } from "next/router";
 import { useEffect, useRef } from 'react';
+import { useRouter } from "next/router";
+
 import { Style } from "react-style-tag";
 import jsPDF from "jspdf";
 import html2canvas from 'html2canvas';
@@ -20,7 +21,7 @@ const pdf = () => {
             const pdf = new jsPDF();
 
             pdf.addImage(imgData, 'JPEG', 0, 0);
-            pdf.save("test.pdf");
+            pdf.save(`radikal_gym_pago_${id}.pdf`);
 
             router.push("/perfil");
         });

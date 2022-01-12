@@ -216,3 +216,24 @@
 	cursor: pointer;
 	font-size: 1.2rem;
 }
+
+.workout-type {
+	/* width: 2%; */
+	min-width: 230px;
+	max-width: 230px;
+	border-radius: 25px;
+	margin: 0.3rem 0.3rem;
+	padding: 0.4rem 0.8rem;
+	text-align: center;
+	font-size: 1.3rem;
+}
+
+.add-type {
+	background-color: gray;
+	color: white;
+	cursor: pointer;
+}
+
+.add-type:hover {
+	background-color: rgb(99, 99, 99);
+}

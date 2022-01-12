@@ -14,6 +14,11 @@ import Spinner from "react-bootstrap/Spinner";
 import Modal from "../components/Modal";
 
 
+const colors = [
+    "#6CBB7A", "#fadc9b", "#f9a59a", "#6a9eff", "#6CCCC9", 
+    "#9CC95C", "#B399D4", "#D9D9D9", "#d8af97", "#fdfd96"
+];
+
 const WorkoutTypes = ({ workoutTypes, refetchTypes }) => {
     const [showModal, setShowModal] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
@@ -64,22 +69,25 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes }) => {
     }
 
     return <>
-        <Card border="primary" className="m-5 p-2">
-            <Card.Body>
-                <Button size="sm" variant="success" onClick={() => setShowModal(true)}>
-                    <i className="bi bi-plus-circle me-2" />
-                    <span>Agregar Tipo de clase</span>
-                </Button>
-                <h2>Tipos de Clase</h2>
-                <ul>
-                    {workoutTypes?.map(type => (
-                        <li key={type.name}>
-                            <span>{type.emoji} {type.name}</span>
-                        </li>
-                    ))}
-                </ul>
-            </Card.Body>
-        </Card>
+        <Card.Body>
+            <Row>
+                {workoutTypes?.map(type => (
+                    <Col 
+                        key={type.name} className="workout-type"
+                        style={{ backgroundColor: colors[Math.floor(Math.random() * colors.length)] }}
+                    >
+                        <span>{type.emoji} {type.name}</span>
+                    </Col>
+                ))}
+                <Col 
+                    className="workout-type add-type"
+                    onClick={() => setShowModal(true)}
+                >
+                    <span>Agregar</span>
+                    <i className="bi bi-plus-circle ms-2" />
+                </Col>
+            </Row>
+        </Card.Body>
         <Modal 
             show={showModal}
             onHide={() => setShowModal(false)} 
