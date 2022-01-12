@@ -58,7 +58,7 @@ const Header = ({ user, role }) => {
                         <NavDropdown title={<UserNameRole />}>
                             <UserRole />
                             <NavDropdown.Divider />
-                            <NavDropdown.Item onClick={() => console.log("Perfil")}>
+                            <NavDropdown.Item onClick={() => router.push("/perfil")}>
                                 Perfil
                             </NavDropdown.Item>
                             {user.isInstructor && role !== "instructor" &&

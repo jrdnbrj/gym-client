@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import Script from 'next/script'
+import Script from "next/script";
+import { useRouter } from "next/router";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useQuery } from "@apollo/client";
@@ -9,9 +10,10 @@ import userMe from "../graphql/query/userMe";
 
 const Layout = ({ Component, pageProps, children }) => {
 
+    const router = useRouter();
     const dispatch = useDispatch();
     const { data } = useQuery(userMe);
-
+    
     const role = useSelector(state => state.user.currentRole);
     const user = useSelector(state => state.user.user);
 
@@ -39,7 +41,7 @@ const Layout = ({ Component, pageProps, children }) => {
 
     return <>
         <Script src='https://meet.jit.si/external_api.js' />
-        <Header {...appProps} />
+        {router.pathname !== "/pdf" && <Header {...appProps} />}
         <Component {...pageProps} {...appProps} />
     </>;
 }
