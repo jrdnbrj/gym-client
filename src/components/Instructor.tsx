@@ -86,7 +86,7 @@ const Instructor = ({ classes }) => {
 
     const sendEmail = () => {
         const message = document.getElementById("message").value;
-        console.log(classInfo.scheduleID, message);
+        
         instructorSendEmail({
             variables: {
                 weekScheduleID: classInfo.scheduleID,
@@ -106,9 +106,8 @@ const Instructor = ({ classes }) => {
     }
 
     const GetAttendance = () => {
-
         if (classInfo.students.length < 1)
-            return <span>Aún no hay estudiantes registrados</span>;
+            return <span>Aún no hay estudiantes registrados.</span>;
 
         if (attendanceLoading)
             return <Spinner animation="border" variant="primary" />;
@@ -119,28 +118,29 @@ const Instructor = ({ classes }) => {
 
             return item.attendance.map((attendance, i) => {
                 return classInfo.students.map(student => {
-                    if (attendance.studentID === parseInt(student.id)) {
-                        if (attendanceToday(item.date)) {
-                            if (attendance.attended) {
-                                return (
-                                    <span key={i}>
-                                        {student.firstName} {student.lastName}✔️{". "}
-                                    </span>
-                                );
-                            } else {
-                                return (
-                                    <span key={i}>
-                                        {student.firstName} {student.lastName}❌{". "}
-                                    </span>
-                                );
-                            }
+                    if (attendance.studentID !== student.id)
+                        return null;
+
+                    if (attendanceToday(item.date)) {
+                        if (attendance.attended) {
+                            return (
+                                <span key={i}>
+                                    {student.firstName} {student.lastName}✔️{". "}
+                                </span>
+                            );
                         } else {
                             return (
                                 <span key={i}>
-                                    {student.firstName} {student.lastName}{". "}
+                                    {student.firstName} {student.lastName}❌{". "}
                                 </span>
                             );
                         }
+                    } else {
+                        return (
+                            <span key={i}>
+                                {student.firstName} {student.lastName}{". "}
+                            </span>
+                        );
                     }
                 });
             });
@@ -150,7 +150,7 @@ const Instructor = ({ classes }) => {
     const GetAttendanceeee = () => {
 
         if (classInfo.students.length < 1)
-            return <span>Aún no hay estudiantes registrados</span>;
+            return <span>Aún no hay estudiantes registrados.</span>;
 
         if (attendanceLoading)
             return <Spinner animation="border" variant="primary" />;
@@ -161,7 +161,7 @@ const Instructor = ({ classes }) => {
                     return null;
 
                 return item.attendance.map((attendance, i) => {
-                    if (attendance.studentID === parseInt(student.id)) {
+                    if (attendance.studentID !== parseInt(student.id)) {
                         if (attendanceToday(item.date)) {
                             if (attendance.attended) {
                                 return (
@@ -219,11 +219,10 @@ const Instructor = ({ classes }) => {
         const { id, checked } = e.target;
         const newAttendedIDs = [...classInfo.attendedIDs];
 
-        if (checked) {
+        if (checked)
             newAttendedIDs.push(id);
-        } else {
+        else
             newAttendedIDs.splice(newAttendedIDs.indexOf(id), 1);
-        }
 
         setClassInfo({ ...classInfo, attendedIDs: newAttendedIDs });
     }
