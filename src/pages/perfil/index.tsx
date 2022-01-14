@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { useRouter } from "next/router";
+import { useMutation } from "@apollo/client";
 
-import html2canvas from 'html2canvas';
+import * as EmailValidator from "email-validator";
+
+import userEditInfo from "../../graphql/mutation/userEditInfo";
 
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -8,6 +12,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
+import Alert from "react-bootstrap/Alert";
+import Spinner from "react-bootstrap/Spinner";
 
 
 const medicalData = [
@@ -88,20 +94,47 @@ const paymentData = [
     }
 ];
 
-const Profile = ({ user }) => {
+const Profile = ({ user, refetch }) => {
+
+    const [errorMsg, setErrorMsg] = useState();
 
     const router = useRouter();
 
+    const [editUserInfo, { loading }] = useMutation(userEditInfo, {
+        onCompleted: () => {
+            refetch();
+            alert("Se ha actualizado la información con éxito.");
+        },
+        onError: error => {
+            console.log(error);
+            setErrorMsg(error.message);
+        }
+    });
+
     const onSubmit = (e) => {
         e.preventDefault();
+        setErrorMsg("");
 
         const firstName = e.target.firstName.value;
         const lastName = e.target.lastName.value;
         const email = e.target.email.value;
 
-        console.log("firstName: ", firstName);
-        console.log("lastName: ", lastName);
-        console.log("email: ", email);
+        if (firstName.length === 0) {
+            setErrorMsg("Debes ingresar un nombre.");
+            return;
+        }
+
+        if (lastName.length === 0) {
+            setErrorMsg("Debes ingresar un apellido.");
+            return;
+        }
+
+        if (!EmailValidator.validate(email)) {
+            setErrorMsg("Debes ingresar un email válido.");
+            return;
+        }
+
+        editUserInfo({ variables: { firstName, lastName, email } });
     }
 
     const getIMC = (weight, height) => {
@@ -130,7 +163,7 @@ const Profile = ({ user }) => {
                             <Form.Label>Nombre</Form.Label>
                             <Form.Control 
                                 type="text" placeholder="Escribe tu nombre" 
-                                defaultValue={user.firstName}
+                                defaultValue={user.firstName} required
                             /> 
                         </Form.Group>
                     </Col>
@@ -139,7 +172,7 @@ const Profile = ({ user }) => {
                             <Form.Label>Apellido</Form.Label>
                             <Form.Control
                                 type="text" placeholder="Escribe tu apellido"
-                                defaultValue={user.lastName}
+                                defaultValue={user.lastName} required
                             />
                         </Form.Group>
                     </Col>
@@ -148,15 +181,17 @@ const Profile = ({ user }) => {
                             <Form.Label>Email</Form.Label>
                             <Form.Control
                                 type="email" placeholder="Escribe tu email"
-                                defaultValue={user.email}
+                                defaultValue={user.email} required
                             />
                         </Form.Group>
                     </Col>
                 </Row>
-                <Button variant="primary" type="submit" className="mt-2">
+                <Button variant="primary" type="submit" className="my-2">
+                    {loading && <Spinner animation="border" variant="light" size="sm" className="me-1" />}
                     Guardar
                 </Button>
             </Form>
+            {errorMsg && <Alert variant="danger">{errorMsg}</Alert>}
             <hr />
             <div className="my-4">
                 <h2>Historico de Mediciones</h2>

@@ -53,11 +53,7 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
             setErrorMsg('');
             setDeleteError('');
         },
-        onError: error => {
-            console.log("Error: ", error);
-            setDeleteError(error.message);
-            setErrorMsg('');
-        }
+        onError: error => setDeleteError(error.message)
     });
 
     const onSubmit = (e) => {
@@ -68,6 +64,16 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
         const form = e.target;
         const name = form.elements.name.value;
         const emoji = form.elements.emoji.value;
+
+        if (name.length === 0) {
+            setErrorMsg('El nombre no puede estar vacío.');
+            return;
+        }
+
+        if (emoji.length === 0) {
+            setErrorMsg('El emoji no puede estar vacío.');
+            return;
+        }
 
         if (typeName && typeEmoji)
             editWorkoutType({ 
@@ -104,14 +110,14 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
                         <Form.Label>Nombre de la Clase</Form.Label>
                         <Form.Control 
                             type="text" placeholder="Escribe un nombre" 
-                            defaultValue={typeName}
+                            defaultValue={typeName} required
                         />
                     </Form.Group>
                     <Form.Group as={Col} controlId="emoji">
                         <Form.Label>Emoji</Form.Label>
                         <Form.Control 
                             type="text" placeholder="Ingresa un emoji" 
-                            defaultValue={typeEmoji}
+                            defaultValue={typeEmoji} required
                         />
                     </Form.Group>
                 </Row>
