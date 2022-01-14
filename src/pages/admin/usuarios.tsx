@@ -23,18 +23,10 @@ const usuarios = () => {
     const currentRole = useSelector(state => state.user.currentRole);
 
     const { loading, error, data, refetch } = useQuery(userAll);
-    const [userRoles] = useMutation(adminUserRoles, {
-        onCompleted: () => {
-            // alert("Los roles se han actualizado con éxito.");
-            refetch();
-        },
-        onError: error => {
-            alert(error.message);
-        }
+    const [userRoles, { loading: loadingRoles }] = useMutation(adminUserRoles, {
+        onCompleted: () => refetch(),
+        onError: error => alert(error.message)
     });
-
-    if (loading)
-        return <Loading name="Usuarios" />;
 
     // useEffect(() => {
     //     if (currentRole !== 'admin')
@@ -57,13 +49,32 @@ const usuarios = () => {
                 
                 Esta acción no se puede deshacer.`;
 
-        if (confirm(message)) {
-            console.log('add role');
+        if (confirm(message))
             userRoles({ variables: { userID, isClient, isInstructor, isAdmin } });
-        } else {
-            console.log('cancel');
-        }
     }
+
+    const handleRemoveRole = (userID, isInstructor, name) => {
+        const isClient = true;
+        const isAdmin = false;
+        let message = "";
+
+        if (isInstructor)
+            message =
+                `¿Estás seguro que deseas eliminar el rol de administrador de ${name}?
+                
+                Esta acción no se puede deshacer.`;
+        else
+            message =
+                `¿Estás seguro que deseas eliminar el rol de instructor de ${name}?
+
+                Esta acción no se puede deshacer.`;
+
+        if (confirm(message))
+            userRoles({ variables: { userID, isClient, isInstructor, isAdmin } });
+    }
+
+    if (loading || loadingRoles)
+        return <Loading name="Usuarios" />;
 
     if (data) {
         return (
@@ -72,7 +83,7 @@ const usuarios = () => {
                     <Col>
                         <ListGroup>
                             <ListGroup.Item>
-                                <strong>Deportistas</strong>
+                                <strong>DEPORTISTAS</strong>
                             </ListGroup.Item>
                             {data.userAll.map(user => {
                                 if (!user.isClient)
@@ -97,7 +108,7 @@ const usuarios = () => {
                     <Col>
                         <ListGroup>
                             <ListGroup.Item>
-                                <strong>Instructores</strong>
+                                <strong>INSTRUCTORES</strong>
                             </ListGroup.Item>
                             {data.userAll.map(user => {
                                 if (!user.isInstructor)
@@ -113,8 +124,14 @@ const usuarios = () => {
                                             size="sm" onClick={() => handleAddRole(user.id, true, name)}
                                         >
                                             <i className="bi bi-person-rolodex" />
-                                        </Button>
-                                    }
+                                        </Button>}
+                                    {user.instructor?.weekSchedules.length === 0 &&
+                                        <Button 
+                                            variant="danger" title="Quitar rol de Instructor" className="mx-1"
+                                            size="sm" onClick={() => handleRemoveRole(user.id, false, name)}
+                                        >
+                                            <i className="bi bi-x-circle" />
+                                        </Button>}
                                 </ListGroup.Item>
                             })}
                         </ListGroup>
@@ -122,14 +139,23 @@ const usuarios = () => {
                     <Col>
                         <ListGroup>
                             <ListGroup.Item>
-                                <strong>Administradores</strong>
+                                <strong>ADMINISTRADORES</strong>
                             </ListGroup.Item>
                             {data.userAll.map(user => {
-                                if (user.isAdmin)
-                                    return <ListGroup.Item key={user.id}>
-                                        {user.firstName} {user.lastName}
-                                    </ListGroup.Item>
-                                else return null
+                                if (!user.isAdmin)
+                                    return null
+
+                                const name = `${user.firstName} ${user.lastName}`;
+                                
+                                return <ListGroup.Item key={user.id} className="user-list">
+                                    {name}
+                                    <Button 
+                                        variant="danger" title="Quitar rol de administrador" className="mx-1"
+                                        size="sm" onClick={() => handleRemoveRole(user.id, true, name)}
+                                    >
+                                        <i className="bi bi-x-circle" />
+                                    </Button>
+                                </ListGroup.Item>
                             })}
                         </ListGroup>
                     </Col>

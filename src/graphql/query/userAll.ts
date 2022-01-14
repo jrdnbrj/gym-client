@@ -9,6 +9,11 @@ const userAll = gql`
             isClient
             isInstructor
             isAdmin
+            instructor {
+                weekSchedules {
+                    id
+                }
+            }
         }
     }
 `;
