@@ -75,20 +75,22 @@ const usuarios = () => {
                                 <strong>Deportistas</strong>
                             </ListGroup.Item>
                             {data.userAll.map(user => {
+                                if (!user.isClient)
+                                    return null
+                                
                                 const name = `${user.firstName} ${user.lastName}`;
-                                if (user.isClient)
-                                    return <ListGroup.Item key={user.id} className="user-list">
-                                        {name}
-                                        {!user.isInstructor &&
-                                            <Button 
-                                                variant="success" title="hacer instructor" className="mx-1"
-                                                size="sm" onClick={() => handleAddRole(parseInt(user.id), false, name)}
-                                            >
-                                                <i className="bi bi-person-badge" />
-                                            </Button>
-                                        }
-                                    </ListGroup.Item>
-                                else return null
+
+                                return <ListGroup.Item key={user.id} className="user-list">
+                                    {name}
+                                    {!user.isInstructor &&
+                                        <Button 
+                                            variant="success" title="hacer instructor" className="mx-1"
+                                            size="sm" onClick={() => handleAddRole(user.id, false, name)}
+                                        >
+                                            <i className="bi bi-person-badge" />
+                                        </Button>
+                                    }
+                                </ListGroup.Item>
                             })}
                         </ListGroup>
                     </Col>
@@ -98,20 +100,22 @@ const usuarios = () => {
                                 <strong>Instructores</strong>
                             </ListGroup.Item>
                             {data.userAll.map(user => {
+                                if (!user.isInstructor)
+                                    return null
+                                
                                 const name = `${user.firstName} ${user.lastName}`;
-                                if (user.isInstructor)
-                                    return <ListGroup.Item key={user.id} className="user-list">
-                                        {name}
-                                        {!user.isAdmin &&
-                                            <Button 
-                                                variant="primary" title="hacer administrador" className="mx-1"
-                                                size="sm" onClick={() => handleAddRole(parseInt(user.id), true, name)}
-                                            >
-                                                <i className="bi bi-person-rolodex" />
-                                            </Button>
-                                        }
-                                    </ListGroup.Item>
-                                else return null
+
+                                return <ListGroup.Item key={user.id} className="user-list">
+                                    {name}
+                                    {!user.isAdmin &&
+                                        <Button 
+                                            variant="primary" title="hacer administrador" className="mx-1"
+                                            size="sm" onClick={() => handleAddRole(user.id, true, name)}
+                                        >
+                                            <i className="bi bi-person-rolodex" />
+                                        </Button>
+                                    }
+                                </ListGroup.Item>
                             })}
                         </ListGroup>
                     </Col>

@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 const adminUserRoles = gql`
     mutation (
-        $userID: Float!, $isClient: Boolean!, 
+        $userID: ID!, $isClient: Boolean!, 
         $isInstructor: Boolean!, $isAdmin: Boolean!
     ) {
         adminUserRoles(

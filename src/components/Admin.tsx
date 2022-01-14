@@ -81,8 +81,9 @@ const Client = ({ classes, refetch }) => {
             if (schedule.days.includes(day[2])) {
                 const schudelTime = new Date(schedule.startDate);
                 const hourStart = schudelTime.getUTCHours().toString();
-
-                if (hourStart === hour) {
+                const classTime = hour < 10 ? hour.replace('0', '') : hour;
+                
+                if (hourStart === classTime) {
                     students = schedule.students;
                     instructor = schedule.instructor.firstName + 
                         " " + schedule.instructor.lastName;

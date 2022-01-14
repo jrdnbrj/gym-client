@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useMutation } from "@apollo/client";
 
 import workoutTypeCreate from "../graphql/mutation/workoutTypeCreate";
+import workoutTypeEdit from "../graphql/mutation/workoutTypeEdit";
+import workoutTypeDelete from "../graphql/mutation/workoutTypeDelete";
 
 import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
@@ -19,9 +21,13 @@ const colors = [
     "#9CC95C", "#B399D4", "#D9D9D9", "#d8af97", "#fdfd96"
 ];
 
-const WorkoutTypes = ({ workoutTypes, refetchTypes }) => {
+const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
     const [showModal, setShowModal] = useState(false);
+    const [showEdit, setShowEdit] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [deleteError, setDeleteError] = useState('');
+    const [typeName, setTypeName] = useState('');
+    const [typeEmoji, setTypeEmoji] = useState('');
 
     const [createWorkoutType, { loading: loadingCreate }] = useMutation(workoutTypeCreate, {
         onCompleted: () => {
@@ -30,6 +36,28 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes }) => {
             setErrorMsg('');
         },
         onError: error => setErrorMsg(error.message)
+    });
+    const [editWorkoutType, { loading: loadingEdit }] = useMutation(workoutTypeEdit, {
+        onCompleted: () => {
+            refetchTypes();
+            refetchClasses();
+            setShowEdit(false);
+            setErrorMsg('');
+        },
+        onError: error => setErrorMsg(error.message)
+    });
+    const [deleteWorkoutType, { loading: loadingDelete }] = useMutation(workoutTypeDelete, {
+        onCompleted: () => {
+            refetchTypes();
+            setShowModal(false);
+            setErrorMsg('');
+            setDeleteError('');
+        },
+        onError: error => {
+            console.log("Error: ", error);
+            setDeleteError(error.message);
+            setErrorMsg('');
+        }
     });
 
     const onSubmit = (e) => {
@@ -41,7 +69,31 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes }) => {
         const name = form.elements.name.value;
         const emoji = form.elements.emoji.value;
 
-        createWorkoutType({ variables: { name, emoji } });
+        if (typeName && typeEmoji)
+            editWorkoutType({ 
+                variables: { 
+                    originalName: typeName, 
+                    newName: name, 
+                    newEmoji: emoji 
+                } 
+            });
+        else
+            createWorkoutType({ variables: { name, emoji } });
+    }
+
+    const openEditModal = (name, emoji) => {
+        setDeleteError('');
+
+        setShowEdit(true);
+        setTypeName(name);
+        setTypeEmoji(emoji);
+    }
+
+    const removeWorkoutType = name => {
+        setDeleteError('');
+
+        if (confirm(`¿Estás seguro que de eliminar el tipo de clase "${name}"?`))
+            deleteWorkoutType({ variables: { name } });
     }
 
     const ModalBody = () => {
@@ -50,33 +102,46 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes }) => {
                 <Row className="mb-3">
                     <Form.Group as={Col} controlId="name">
                         <Form.Label>Nombre de la Clase</Form.Label>
-                        <Form.Control type="text" placeholder="Escribe un nombre" />
+                        <Form.Control 
+                            type="text" placeholder="Escribe un nombre" 
+                            defaultValue={typeName}
+                        />
                     </Form.Group>
                     <Form.Group as={Col} controlId="emoji">
                         <Form.Label>Emoji</Form.Label>
-                        <Form.Control type="text" placeholder="Ingresa un emoji" />
+                        <Form.Control 
+                            type="text" placeholder="Ingresa un emoji" 
+                            defaultValue={typeEmoji}
+                        />
                     </Form.Group>
                 </Row>
-                {errorMsg && 
-                    <Alert variant="danger">{errorMsg}</Alert>}
+                {errorMsg && <Alert variant="danger">{errorMsg}</Alert>}
                 <Button variant="primary" type="submit">
-                    {loadingCreate &&
+                    {loadingCreate || loadingEdit &&
                         <Spinner animation="border" variant="light" size="sm" className="me-1" />}
-                    Agregar
+                    {typeName && typeEmoji ? "Editar" : "Agregar"}
                 </Button>
             </Form>
         );
     }
 
     return <>
-        <Card.Body>
+        <Card.Body className="mt-5">
             <Row>
                 {workoutTypes?.map(type => (
                     <Col 
-                        key={type.name} className="workout-type"
+                        key={type.name} className="workout-type" title="Tipo de Clase"
                         style={{ backgroundColor: colors[Math.floor(Math.random() * colors.length)] }}
                     >
-                        <span>{type.emoji} {type.name}</span>
+                        <span 
+                            onClick={() => openEditModal(type.name, type.emoji)}
+                        >
+                            {type.emoji} {type.name}
+                        </span>
+                        <i 
+                            className="bi bi-x-circle-fill" 
+                            onClick={() => removeWorkoutType(type.name)}   
+                        />
                     </Col>
                 ))}
                 <Col 
@@ -88,10 +153,17 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes }) => {
                 </Col>
             </Row>
         </Card.Body>
+        {deleteError && <Alert variant="danger">{deleteError}</Alert>}
         <Modal 
             show={showModal}
             onHide={() => setShowModal(false)} 
             header="Agregar Tipo de Clase"
+            ModalBody={ModalBody}
+        />
+        <Modal 
+            show={showEdit}
+            onHide={() => setShowEdit(false)} 
+            header="Editar Tipo de Clase"
             ModalBody={ModalBody}
         />
     </>;

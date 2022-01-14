@@ -13,7 +13,7 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import userLogout from "../graphql/mutation/userLogout";
 
 
-const Header = ({ user, role }) => {
+const Header = ({ user, role, refetch }) => {
     const router = useRouter();
     const dispatch = useDispatch();
 

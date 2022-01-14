@@ -4,7 +4,6 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
-import Card from "react-bootstrap/Card";
 import ListGroup from "react-bootstrap/ListGroup";
 import Alert from "react-bootstrap/Alert";
 import Spinner from "react-bootstrap/Spinner";
@@ -21,11 +20,11 @@ const days = [
 ]
 
 const hours = [
-    "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", 
+    "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", 
     "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"
 ]
 
-const CreateClass = ({ workoutTypes, refetchTypes, instructors }) => {
+const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) => {
     const [users, setUsers] = useState([]);
     const [msgError, setMsgError] = useState("");
     const [formValid, setFormValid] = useState(false);
@@ -41,7 +40,8 @@ const CreateClass = ({ workoutTypes, refetchTypes, instructors }) => {
         weekScheduleCreate, 
         {
             onCompleted: () => {
-                alert("La clase se ha creado con éxito.");
+                refetchClasses();
+                // alert("La clase se ha creado con éxito.");
                 setFormValid(false);
                 setFormData({
                     type: "",
@@ -51,6 +51,7 @@ const CreateClass = ({ workoutTypes, refetchTypes, instructors }) => {
                 });
                 setMsgError("");
                 reset();
+                closeModal();
             },
             onError: error => {
                 console.log("createSchedule Error:", error.message);
@@ -68,19 +69,6 @@ const CreateClass = ({ workoutTypes, refetchTypes, instructors }) => {
         if (data)
             setUsers(data.userAll);
     }, [data]);
-
-    const getStartDate = time => {
-        const date = new Date();
-        
-        let day = date.getDate();
-        let month = date.getMonth() + 1;
-        let year = date.getFullYear();
-        let hours = parseInt(time.split(":")[0]);
-        let minutes = parseInt(time.split(":")[1]);
-
-        return { day, month, year, hours, minutes }
-    }
-
 
     const handleControlChange = e => {
         setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -134,64 +122,57 @@ const CreateClass = ({ workoutTypes, refetchTypes, instructors }) => {
     }
 
     return (
-        <Card border="primary" className="m-5 p-2">
-            <Card.Body>
-            <h2>Crear nueva clase</h2>
-                <Form onSubmit={onSubmit}>
-                    <FloatingLabel controlId="type" label="Tipo de clase">
-                        <Form.Select value={formData.type} onChange={handleControlChange}>
-                            <option hidden>Escoge un tipo de clase</option>
-                            {workoutTypes.map((type, i) => {
-                                return <option key={i} value={type.name}>{type.emoji} {type.name}</option>
+        <div className="m-1">
+            <Form onSubmit={onSubmit}>
+                <FloatingLabel controlId="type" label="Tipo de clase">
+                    <Form.Select value={formData.type} onChange={handleControlChange}>
+                        <option hidden>Escoge un tipo de clase</option>
+                        {workoutTypes.map((type, i) => {
+                            return <option key={i} value={type.name}>{type.emoji} {type.name}</option>
+                        })}
+                    </Form.Select>
+                </FloatingLabel>
+                <FloatingLabel controlId="instructorID" label="Instructor" className="my-2">
+                    <Form.Select value={formData.instructorID} onChange={handleControlChange}>
+                        <option hidden>Escoge un Instructor</option>
+                        {instructors?.map((instructor, i) => {
+                            return <option key={i} value={instructor.id}>
+                                {instructor.firstName} {instructor.lastName}
+                            </option>
+                        })}
+                    </Form.Select>
+                </FloatingLabel>
+                <FloatingLabel controlId="startDate" label="Hora de Clase">
+                    <Form.Select value={formData.startDate} onChange={handleControlChange}>
+                        <option hidden>Escoge una hora</option>
+                        {hours.map((hour, i) => {
+                            return <option key={i} value={hour}>{hour}</option>
+                        })}
+                    </Form.Select>
+                </FloatingLabel>
+                <ListGroup className="my-2">
+                    <ListGroup.Item>
+                        <Form.Text className="text-muted mb-1">
+                            Escoge uno o varios días para la clase.
+                        </Form.Text>
+                        <Form.Group className="inline-checkbox my-1 text-center" controlId="weekDays">
+                            {days.map((day, i) => {
+                                return <Form.Check 
+                                    inline key={i} type="checkbox" id={day[1]} 
+                                    label={day[0]} className="ms-1"
+                                    onChange={handleCheckboxChange} 
+                                />
                             })}
-                        </Form.Select>
-                    </FloatingLabel>
-                    <FloatingLabel controlId="instructorID" label="Instructor" className="my-2">
-                        <Form.Select value={formData.instructorID} onChange={handleControlChange}>
-                            <option hidden>Escoge un Instructor</option>
-                            {instructors?.map((instructor, i) => {
-                                return <option key={i} value={instructor.id}>
-                                    {instructor.firstName} {instructor.lastName}
-                                </option>
-                            })}
-                        </Form.Select>
-                    </FloatingLabel>
-                    <FloatingLabel controlId="startDate" label="Hora de Clase">
-                        <Form.Select value={formData.startDate} onChange={handleControlChange}>
-                            <option hidden>Escoge una hora</option>
-                            {hours.map((hour, i) => {
-                                return <option key={i} value={hour}>{hour}</option>
-                            })}
-                        </Form.Select>
-                    </FloatingLabel>
-                    <ListGroup className="my-2">
-                        <ListGroup.Item>
-                            <Form.Text className="text-muted mb-1">
-                                Escoge uno o varios días para la clase.
-                            </Form.Text>
-                            <Form.Group className="inline-checkbox my-1 text-center" controlId="weekDays">
-                                {days.map((day, i) => {
-                                    return <Form.Check 
-                                        inline key={i} type="checkbox" id={day[1]} 
-                                        label={day[0]} className="ms-1"
-                                        onChange={handleCheckboxChange} 
-                                    />
-                                })}
-                            </Form.Group>
-                        </ListGroup.Item>
-                    </ListGroup>
-                    <Button variant="success" type="submit">
-                        {loading && <Spinner animation="grow" size="sm" className="me-1" />}
-                        Crear Clase
-                    </Button>
-                    {msgError && 
-                        <Alert variant="danger" className="my-2">
-                            {msgError}
-                        </Alert>
-                    }
-                </Form>
-            </Card.Body>
-        </Card>
+                        </Form.Group>
+                    </ListGroup.Item>
+                </ListGroup>
+                <Button variant="success" type="submit">
+                    {loading && <Spinner animation="grow" size="sm" className="me-1" />}
+                    Crear Clase
+                </Button>
+                {msgError && <Alert variant="danger" className="my-2">{msgError}</Alert>}
+            </Form>
+        </div>
     );
 }
 

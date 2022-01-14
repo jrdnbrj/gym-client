@@ -158,8 +158,9 @@ const Client = ({ classes, refetch }) => {
             if (schedule.days.includes(day[2])) {
                 const scheduleTime = new Date(schedule.startDate);
                 const hourStart = scheduleTime.getUTCHours().toString();
+                const classTime = hour < 10 ? hour.replace('0', '') : hour;
 
-                if (hourStart === hour) {
+                if (hourStart === classTime) {
                     const students = Array.from(schedule.students, student => student.id);
 
                     if (students.includes(user.id)) {

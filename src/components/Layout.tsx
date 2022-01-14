@@ -12,7 +12,7 @@ const Layout = ({ Component, pageProps, children }) => {
 
     const router = useRouter();
     const dispatch = useDispatch();
-    const { data } = useQuery(userMe);
+    const { data, refetch } = useQuery(userMe);
     
     const role = useSelector(state => state.user.currentRole);
     const user = useSelector(state => state.user.user);
@@ -37,7 +37,7 @@ const Layout = ({ Component, pageProps, children }) => {
             dispatch({ type: "SET_CURRENT_ROLE", payload: "instructor" });
     }, [data]);
 
-    const appProps = { user, role };
+    const appProps = { user, role, refetch };
 
     return <>
         <Script src='https://meet.jit.si/external_api.js' />

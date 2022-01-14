@@ -338,8 +338,9 @@ const Instructor = ({ classes }) => {
             if (schedule.days.includes(day[2])) {
                 const schudelTime = new Date(schedule.startDate);
                 const hourStart = schudelTime.getUTCHours().toString();
+                const classTime = hour < 10 ? hour.replace('0', '') : hour;
 
-                if (hourStart === hour) {
+                if (hourStart === classTime) {
                     if (schedule.instructor.id === user.id) {
                         available = true;
                         quotas = schedule.quotas;

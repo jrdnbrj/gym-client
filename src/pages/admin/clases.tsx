@@ -8,8 +8,9 @@ import Spinner from "react-bootstrap/Spinner";
 import { useQuery, useMutation } from "@apollo/client";
 import userAll from "../../graphql/query/userAll";
 import workoutTypeAll from "../../graphql/query/workoutTypeAll";
+import weekScheduleAll from "../../graphql/query/weekScheduleAll";
 
-import CreateClass from "../../components/CreateClass";
+import WeekSchedules from "../../components/WeekSchedules";
 import WorkoutTypes from "../../components/WorkoutTypes";
 import Loading from "../../components/Loading";
 
@@ -22,11 +23,12 @@ const clases = () => {
 
     const { data, loading, refetch } = useQuery(workoutTypeAll);
     const { data: users, loading: loadingUsers } = useQuery(userAll);
+    const { loading: loadingClasses, data: dataClasses, refetch: refetchClasses } = useQuery(weekScheduleAll);
 
-    useEffect(() => {
-        if (currentRole !== "admin")
-            router.push("/calendario"); 
-    }, [currentRole]);
+    // useEffect(() => {
+    //     if (currentRole !== "admin")
+    //         router.push("/calendario"); 
+    // }, [currentRole]);
 
     if (loading)
         return <Loading name="Tipos de Clases" />;
@@ -34,15 +36,20 @@ const clases = () => {
     if (loadingUsers)
         return <Loading name="Usuarios" />;
 
+    if (loadingClasses)
+        return <Loading name="Clases" />;
+
     return (
         <Container>
             <WorkoutTypes 
                 workoutTypes={data?.workoutTypeAll}
                 refetchTypes={refetch} 
+                refetchClasses={refetchClasses} 
             />
-            <CreateClass 
+            <WeekSchedules 
                 workoutTypes={data?.workoutTypeAll}
-                refetchTypes={refetch} 
+                refetchClasses={refetchClasses} 
+                classes={dataClasses?.weekScheduleAll}
                 instructors={users?.userAll?.filter(user => user.isInstructor)}
             />
         </Container>
