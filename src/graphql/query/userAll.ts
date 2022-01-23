@@ -6,6 +6,7 @@ const userAll = gql`
             id
             firstName
             lastName
+            email
             isClient
             isInstructor
             isAdmin

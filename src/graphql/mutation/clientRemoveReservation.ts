@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 const clientRemoveReservation = gql`
-    mutation ($weekScheduleID: Float!) {
+    mutation ($weekScheduleID: ID!) {
         clientRemoveReservation(weekScheduleID: $weekScheduleID)
     }
 `;

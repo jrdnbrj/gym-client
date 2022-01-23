@@ -151,7 +151,7 @@ const Profile = ({ user, refetch }) => {
             nombre: `${user.firstName} ${user.lastName}`,
             email: user.email
         }
-        router.push(`/pdf?${Object.keys(args).map(key => key + '=' + args[key]).join('&')}`)
+        router.push(`/pdf?${Object.keys(args).map(key => key + '=' + args[key]).join('&')}`);
     }
 
     return (

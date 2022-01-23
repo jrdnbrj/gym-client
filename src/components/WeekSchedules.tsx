@@ -33,7 +33,7 @@ const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) =
             return "Sin estudiantes";
 
         return students.map(student => 
-            student.name + " " + student.lastname
+            student.firstName + " " + student.lastName
         ).join(", ");
     }
 

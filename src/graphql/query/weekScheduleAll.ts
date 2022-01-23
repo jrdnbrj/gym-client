@@ -8,6 +8,7 @@ const weekScheduleAll = gql`
                 name
                 emoji
             }
+            price
             quotas
             days
             startDate

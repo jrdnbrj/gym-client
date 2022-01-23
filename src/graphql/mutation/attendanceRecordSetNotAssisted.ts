@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 const attendanceRecordSetNotAssisted = gql`
-    mutation ($weekScheduleID: Float!, $notAssistedIDs: [ID!]!) {
+    mutation ($weekScheduleID: ID!, $notAssistedIDs: [ID!]!) {
         attendanceRecordSetNotAssisted(
             weekScheduleID: $weekScheduleID, 
             notAssistedIDs: $notAssistedIDs

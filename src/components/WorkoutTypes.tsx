@@ -34,6 +34,8 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
             refetchTypes();
             setShowModal(false);
             setErrorMsg('');
+            setTypeName('');
+            setTypeEmoji('');
         },
         onError: error => setErrorMsg(error.message)
     });
@@ -43,6 +45,8 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
             refetchClasses();
             setShowEdit(false);
             setErrorMsg('');
+            setTypeName('');
+            setTypeEmoji('');
         },
         onError: error => setErrorMsg(error.message)
     });

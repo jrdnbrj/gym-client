@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
 
 import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
@@ -15,20 +14,22 @@ import WorkoutTypes from "../../components/WorkoutTypes";
 import Loading from "../../components/Loading";
 
 
-const clases = () => {
+const clases = ({ role }) => {
 
     const router = useRouter();
 
-    const currentRole = useSelector(state => state.user.currentRole);
-
     const { data, loading, refetch } = useQuery(workoutTypeAll);
     const { data: users, loading: loadingUsers } = useQuery(userAll);
-    const { loading: loadingClasses, data: dataClasses, refetch: refetchClasses } = useQuery(weekScheduleAll);
+    const { 
+        loading: loadingClasses, 
+        data: dataClasses, 
+        refetch: refetchClasses 
+    } = useQuery(weekScheduleAll);
 
-    // useEffect(() => {
-    //     if (currentRole !== "admin")
-    //         router.push("/calendario"); 
-    // }, [currentRole]);
+    useEffect(() => {
+        if (role !== "admin")
+            router.push("/calendario"); 
+    }, [role]);
 
     if (loading)
         return <Loading name="Tipos de Clases" />;

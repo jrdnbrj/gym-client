@@ -33,6 +33,7 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
         instructorID: "",
         startDate: "",
         weekDays: [],
+        price: "",
     });
 
     const { data } = useQuery(userAll);
@@ -110,6 +111,19 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
             return;
         }
 
+        if (formData.price === "") {
+            setMsgError("Ingresa un precio.");
+            return;
+        } else {
+            const price = parseFloat(formData.price);
+            if (isNaN(price)) {
+                setMsgError("Ingresa un precio válido.");
+                return;
+            }
+
+            setFormData({ ...formData, price });
+        }
+
         if (formData.weekDays.length === 0) {
             setMsgError("Selecciona al menos un día de la semana.");
             return;
@@ -117,8 +131,6 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
 
         setMsgError("");
         setFormValid(true);
-        console.log("formData:", formData);
-        setFormData({ ...formData });
     }
 
     return (
@@ -144,11 +156,14 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
                 </FloatingLabel>
                 <FloatingLabel controlId="startDate" label="Hora de Clase">
                     <Form.Select value={formData.startDate} onChange={handleControlChange}>
-                        <option hidden>Escoge una hora</option>
+                        <option hidden>Escoge un horario</option>
                         {hours.map((hour, i) => {
                             return <option key={i} value={hour}>{hour}</option>
                         })}
                     </Form.Select>
+                </FloatingLabel>
+                <FloatingLabel controlId="price" label="Ingresa el precio mensual" className="my-2">
+                    <Form.Control type="number" placeholder="100" onChange={handleControlChange} />
                 </FloatingLabel>
                 <ListGroup className="my-2">
                     <ListGroup.Item>

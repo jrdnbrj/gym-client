@@ -4,14 +4,16 @@ const weekScheduleCreate = gql`
     mutation (
         $type: String!,
         $instructorID: ID!,
-        $startDate: String!, 
+        $startDate: DateTime!, 
         $weekDays: [Weekday!]!,
+        $price: Float!,
     ) {
         weekScheduleCreate(
             type: $type,
             instructorID: $instructorID
             startDate: $startDate
             weekDays: $weekDays
+            price: $price
         ) {
             id
             quotas

@@ -10,7 +10,7 @@ import weekScheduleAll from "../graphql/query/weekScheduleAll";
 import Spinner from "react-bootstrap/Spinner";
 
 
-const Calendario = () => {
+const Calendario = props => {
 
     const currentRole = useSelector(state => state.user.currentRole);
 
@@ -24,12 +24,28 @@ const Calendario = () => {
             return <Loading name="Calendario" />;
 
         if (currentRole === 'instructor')
-            return <Instructor classes={data.weekScheduleAll} />;
+            return (
+                <Instructor 
+                    classes={data.weekScheduleAll} 
+                    {...props} 
+                />
+            );
         else if (currentRole === 'admin')
-            return <Admin classes={data.weekScheduleAll} refetch={refetch} />;
+            return (
+                <Admin 
+                    classes={data.weekScheduleAll} 
+                    refetchClasses={refetch} 
+                    {...props} 
+                />
+            );
         else
-            return <Client classes={data.weekScheduleAll} refetch={refetch} />;
-
+            return (
+                <Client 
+                    classes={data.weekScheduleAll} 
+                    refetchClasses={refetch} 
+                    {...props} 
+                />
+            );
     }
 
     return <PageByRole />;
