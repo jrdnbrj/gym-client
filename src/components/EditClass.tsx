@@ -24,7 +24,8 @@ const hours = [
     "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"
 ]
 
-const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) => {
+const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clase }) => {
+    console.log("Clase:", clase);
     const [users, setUsers] = useState([]);
     const [msgError, setMsgError] = useState("");
     const [formValid, setFormValid] = useState(false);
@@ -42,6 +43,7 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
         {
             onCompleted: () => {
                 refetchClasses();
+                // alert("La clase se ha creado con éxito.");
                 setFormValid(false);
                 setFormData({
                     type: "",
@@ -141,7 +143,7 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
     const startDateValue = () => {
         const date = new Date(formData.startDate);
         const hours = date.getHours();
-        
+
         return hours < 10 ? `0${hours}:00` : `${hours}:00`;
     }
 
@@ -197,10 +199,14 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
                     {loading && <Spinner animation="grow" size="sm" className="me-1" />}
                     Crear Clase
                 </Button>
+                <Button variant="danger" type="submit" className="float-end">
+                    {loading && <Spinner animation="grow" size="sm" className="me-1" />}
+                    Eliminar Clase
+                </Button>
                 {msgError && <Alert variant="danger" className="my-2">{msgError}</Alert>}
             </Form>
         </div>
     );
 }
 
-export default CreateClass
+export default EditClass

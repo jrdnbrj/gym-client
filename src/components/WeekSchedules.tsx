@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import CreateClass from "./CreateClass";
+import EditClass from "./EditClass";
 import Modal from "./Modal";
 
 import Table from 'react-bootstrap/Table';
@@ -20,6 +21,8 @@ const days = {
 const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) => {
     
     const [modalShow, setModalShow] = useState(false);
+    const [editModal, setEditModal] = useState(false);
+    const [classData, setClassData] = useState({});
 
     const getTime = datetime => {
         const date = new Date(datetime);
@@ -35,6 +38,11 @@ const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) =
         return students.map(student => 
             student.firstName + " " + student.lastName
         ).join(", ");
+    }
+
+    const openEditModal = clase => {
+        setClassData(clase);
+        setEditModal(true);
     }
 
     return (
@@ -53,6 +61,7 @@ const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) =
                         <th>TIPO DE CLASE</th>
                         <th>DÍAS</th>
                         <th>HORA</th>
+                        <th>PRECIO</th>
                         <th>INSTRUCTOR</th>
                         <th>ESTUDIANTES</th>
                     </tr>
@@ -60,13 +69,14 @@ const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) =
                 <tbody>
                     {classes.map((clase, i) => {
                         return (
-                            <tr key={i}>
+                            <tr key={i} onClick={() => openEditModal(clase)}>
                                 <td>{i + 1}</td>
                                 <td>{clase.workoutType.emoji} {clase.workoutType.name}</td>
-                                <td>{clase.days.map(day => days[day]).join(" - ")}</td>
+                                <td>{clase.days.map(day => days[day]).join("/")}</td>
                                 <td>{getTime(clase.startDate)}</td>
-                                <td>{clase.instructor.firstName} {clase.instructor.lastName}</td>
-                                <td>{getStudents(clase.students)}</td>
+                                <td>$ {clase.price}</td>
+                                <td className="instructor">{clase.instructor.firstName} {clase.instructor.lastName}</td>
+                                <td className="students">{getStudents(clase.students)}</td>
                             </tr>
                         )
                     })}
@@ -81,6 +91,20 @@ const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) =
                         workoutTypes={workoutTypes} 
                         instructors={instructors}
                         refetchClasses={refetchClasses}
+                        closeModal={() => setModalShow(false)}
+                    />
+                }
+            />
+            <Modal
+                header="Editar Clase"
+                show={editModal}
+                onHide={() => setEditModal(false)}
+                ModalBody={() => 
+                    <EditClass 
+                        workoutTypes={workoutTypes} 
+                        instructors={instructors}
+                        refetchClasses={refetchClasses}
+                        clase={classData}
                         closeModal={() => setModalShow(false)}
                     />
                 }

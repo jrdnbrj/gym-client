@@ -16,17 +16,6 @@ const weekScheduleCreate = gql`
             price: $price
         ) {
             id
-            quotas
-            students {
-                id
-                firstName
-            }
-            instructor {
-                id
-                firstName
-            }
-            days
-            startDate
         }
     }
 `;

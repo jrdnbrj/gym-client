@@ -259,3 +259,11 @@
 		margin: 1.75rem auto;
 	}
 }
+
+.instructor {
+	font-size: 0.9rem;
+}
+
+.students {
+	font-size: 0.7rem;
+}

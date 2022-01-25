@@ -16,57 +16,6 @@ import Alert from "react-bootstrap/Alert";
 import Spinner from "react-bootstrap/Spinner";
 
 
-const medicalData = [
-    {
-        id: 1,
-        weight: "75",
-        height: "1.68",
-        pulse: "80",
-        bloodPressure: "120/80",
-        date: "2020-01-01"
-    },
-    {
-        id: 2,
-        weight: "68",
-        height: "1.59",
-        pulse: "90",
-        bloodPressure: "110/90",
-        date: "2020-01-02"
-    },
-    {
-        id: 3,
-        weight: "70",
-        height: "1.60",
-        pulse: "100",
-        bloodPressure: "120/80",
-        date: "2020-01-03"
-    },
-    {
-        id: 4,
-        weight: "75",
-        height: "1.70",
-        pulse: "110",
-        bloodPressure: "130/90",
-        date: "2020-01-04"
-    },
-    {
-        id: 5,
-        weight: "80",
-        height: "1.80",
-        pulse: "120",
-        bloodPressure: "140/100",
-        date: "2020-01-05"
-    },
-    {
-        id: 6,
-        weight: "85",
-        height: "1.90",
-        pulse: "130",
-        bloodPressure: "150/110",
-        date: "2020-01-06"
-    }
-];
-
 const paymentData = [
     {
         id: 1,
@@ -139,7 +88,18 @@ const Profile = ({ user, refetch }) => {
 
     const getIMC = (weight, height) => {
         const imc = weight / (height * height);
+
         return imc.toFixed(1);
+    }
+
+    const getTakenAt = date => {
+        const datetime = new Date(date);
+        let minutes = datetime.getMinutes();
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+
+        const fecha = `${datetime.getDate()}/${datetime.getMonth() + 1}/${datetime.getFullYear()}`;
+        const time = `${datetime.getHours()}:${minutes}`;
+        return `${fecha} ${time}`;
     }
 
     const downloadPdf = data => {
@@ -205,18 +165,20 @@ const Profile = ({ user, refetch }) => {
                             <th>Pulso (bpm)</th>
                             <th>Presión Arterial (mmHg)</th> {/* milimetros de mercurio */}
                             <th>Fecha</th>
+                            <th>Tomado por</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {medicalData.map((data, i) => (
+                        {user.healthRecords?.map((data, i) => (
                             <tr key={i}>
                                 <td>{i+1}</td>
                                 <td>{data.weight}</td>
                                 <td>{data.height}</td>
                                 <td>{getIMC(data.weight, data.height)}</td>
                                 <td>{data.pulse}</td>
-                                <td>{data.bloodPressure}</td>
-                                <td>{data.date}</td>
+                                <td>{data.systolicPressure}/{data.diastolicPressure}</td>
+                                <td>{getTakenAt(data.takenAt)}</td>
+                                <td>{data.takenBy.firstName} {data.takenBy.lastName}</td>
                             </tr>
                         ))}
                     </tbody>

@@ -30,6 +30,7 @@ const Layout = ({ Component, pageProps, children }) => {
                 isClient: data?.userMe.isClient,
                 isInstructor: data?.userMe.isInstructor,
                 isAdmin: data?.userMe.isAdmin,
+                healthRecords: data?.userMe.client.healthRecords,
             }
         });
         

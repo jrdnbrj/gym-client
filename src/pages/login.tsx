@@ -39,14 +39,6 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
     } , [user]);
 
     const [login, { loading, error, data, reset }] = useMutation(userLogin, {
-        onCompleted: ({ userLogin }) => {
-            dispatch({ type: "SET_USER", user: {
-                id: userLogin.id,
-                firstName: userLogin.firstName,
-                lastName: userLogin.lastName,
-                email: userLogin.email,
-            }});
-        },
         onError: (error) => {
             console.log(error);
             alert(error.message);
