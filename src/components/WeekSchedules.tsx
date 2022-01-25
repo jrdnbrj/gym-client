@@ -83,7 +83,7 @@ const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) =
                 </tbody>
             </Table>
             <Modal
-                header="Crear Nueva Clase"
+                header="Nueva Clase"
                 show={modalShow}
                 onHide={() => setModalShow(false)}
                 ModalBody={() => 
@@ -105,7 +105,7 @@ const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) =
                         instructors={instructors}
                         refetchClasses={refetchClasses}
                         clase={classData}
-                        closeModal={() => setModalShow(false)}
+                        closeModal={() => setEditModal(false)}
                     />
                 }
             />

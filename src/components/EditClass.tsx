@@ -10,7 +10,8 @@ import Spinner from "react-bootstrap/Spinner";
 
 import { useQuery, useMutation } from "@apollo/client";
 import userAll from "../graphql/query/userAll";
-import weekScheduleCreate from "../graphql/mutation/weekScheduleCreate";
+import weekScheduleEdit from "../graphql/mutation/weekScheduleEdit";
+import weekScheduleRemove from "../graphql/mutation/weekScheduleRemove";
 
 
 const days = [
@@ -19,58 +20,102 @@ const days = [
     ["Domingo", "Sunday"]
 ]
 
+const dayss = {
+    Monday: "Lunes", Tuesday: "Martes", Wednesday: "Miércoles", Thursday: "Jueves",
+    Friday: "Viernes", Saturday: "Sábado", Sunday: "Domingo"
+}
+
 const hours = [
     "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", 
     "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"
 ]
 
 const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clase }) => {
-    console.log("Clase:", clase);
     const [users, setUsers] = useState([]);
     const [msgError, setMsgError] = useState("");
     const [formValid, setFormValid] = useState(false);
     const [formData, setFormData] = useState({
-        type: "",
+        workoutTypeName: "",
         instructorID: "",
         startDate: "",
         weekDays: [],
+        days: [],
         price: "",
     });
 
     const { data } = useQuery(userAll);
-    const [createSchedule, { loading, reset }] = useMutation(
-        weekScheduleCreate, 
-        {
+    const [editSchedule, { loading: loadingEdit, reset: resetEdit }] = useMutation(
+        weekScheduleEdit, {
             onCompleted: () => {
                 refetchClasses();
-                // alert("La clase se ha creado con éxito.");
                 setFormValid(false);
                 setFormData({
-                    type: "",
+                    workoutTypeName: "",
                     instructorID: "",
                     startDate: "",
                     weekDays: [],
+                    days: [],
+                    price: "",
                 });
                 setMsgError("");
-                reset();
+                resetEdit();
                 closeModal();
             },
             onError: error => {
-                console.log("createSchedule Error:", error.message);
-                setMsgError("Error al crear la clase. Inténtalo de nuevo.");
+                console.log("editSchedule Error:", error.message);
+                setMsgError("Error al editar la clase. Inténtalo de nuevo.");
+            }
+        }
+    );
+    const [removeSchedule, { loading: loadingRemove, reset: resetRemove }] = useMutation(
+        weekScheduleRemove, {
+            onCompleted: () => {
+                refetchClasses();
+                setFormValid(false);
+                setFormData({
+                    workoutTypeName: "",
+                    instructorID: "",
+                    startDate: "",
+                    weekDays: [],
+                    days: [],
+                    price: "",
+                });
+                setMsgError("");
+                resetRemove();
+                closeModal();
+            },
+            onError: error => {
+                console.log("removeSchedule Error:", error.message);
+                setMsgError("Error al eliminar la clase. Inténtalo de nuevo.");
             }
         }
     );
 
     useEffect(() => {
-        if (formValid)
-            createSchedule({ variables: { ...formData } });
+        setFormData({
+            weekScheduleID: clase.id,
+            workoutTypeName: clase.workoutType.name,
+            instructorID: clase.instructor.id,
+            startDate: clase.startDate,
+            weekDays: clase.days,
+            days: [],
+            price: clase.price,
+        });
+    }, [clase]);
+
+    useEffect(() => {
+        if (formValid) {
+            delete formData.weekDays;
+            editSchedule({ variables: { ...formData } });
+        }
     }, [formData])
 
     useEffect(() => {
         if (data)
             setUsers(data.userAll);
     }, [data]);
+
+    const removeClass = () => removeSchedule({ variables: { weekScheduleID: clase.id } });
 
     const handleControlChange = e => {
         if (e.target.id === "startDate") {
@@ -95,21 +140,21 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
         setMsgError("");
 
         const { id, checked } = e.target;
-        const newWeekDays = [...formData.weekDays];
+        const newWeekDays = [...formData.days];
 
         if (checked)
             newWeekDays.push(id);
         else
             newWeekDays.splice(newWeekDays.indexOf(id), 1);
 
-        setFormData({ ...formData, weekDays: newWeekDays });
+        setFormData({ ...formData, days: newWeekDays });
     };
 
     const onSubmit = e => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (formData.type === "") {
+        if (formData.workoutTypeName === "") {
             setMsgError("Selecciona un tipo de clase.");
             return;
         }
@@ -129,7 +174,7 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
             return;
         }
 
-        if (formData.weekDays.length === 0) {
+        if (formData.days.length === 0) {
             setMsgError("Selecciona al menos un día de la semana.");
             return;
         }
@@ -150,8 +195,8 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
     return (
         <div className="m-1">
             <Form onSubmit={onSubmit}>
-                <FloatingLabel controlId="type" label="Tipo de clase">
-                    <Form.Select value={formData.type} onChange={handleControlChange}>
+                <FloatingLabel controlId="workoutTypeName" label="Tipo de clase">
+                    <Form.Select value={formData.workoutTypeName} onChange={handleControlChange}>
                         <option hidden>Escoge un tipo de clase</option>
                         {workoutTypes.map((type, i) => {
                             return <option key={i} value={type.name}>{type.emoji} {type.name}</option>
@@ -177,14 +222,14 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
                     </Form.Select>
                 </FloatingLabel>
                 <FloatingLabel controlId="price" label="Ingresa el precio mensual" className="my-2">
-                    <Form.Control type="number" placeholder="100" onChange={handleControlChange} step=".01" />
+                    <Form.Control type="number" value={formData.price} onChange={handleControlChange} step=".01" />
                 </FloatingLabel>
                 <ListGroup className="my-2">
                     <ListGroup.Item>
                         <Form.Text className="text-muted mb-1">
                             Escoge uno o varios días para la clase.
                         </Form.Text>
-                        <Form.Group className="inline-checkbox my-1 text-center" controlId="weekDays">
+                        <Form.Group className="inline-checkbox my-1 text-center" controlId="days">
                             {days.map((day, i) => {
                                 return <Form.Check 
                                     inline key={i} type="checkbox" id={day[1]} 
@@ -193,16 +238,20 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
                                 />
                             })}
                         </Form.Group>
+                        <Form.Text className="text-muted mb-1">
+                            Días actuales: {formData.weekDays?.map(day => dayss[day]).join(", ")}.
+                        </Form.Text>
                     </ListGroup.Item>
                 </ListGroup>
                 <Button variant="success" type="submit">
-                    {loading && <Spinner animation="grow" size="sm" className="me-1" />}
-                    Crear Clase
+                    {loadingEdit && <Spinner animation="grow" size="sm" className="me-1" />}
+                    Editar Clase
                 </Button>
-                <Button variant="danger" type="submit" className="float-end">
-                    {loading && <Spinner animation="grow" size="sm" className="me-1" />}
-                    Eliminar Clase
-                </Button>
+                {clase?.students.length === 0 && 
+                    <Button variant="danger" className="float-end" onClick={removeClass}>
+                        {loadingRemove && <Spinner animation="grow" size="sm" className="me-1" />}
+                        Eliminar Clase
+                    </Button>}
                 {msgError && <Alert variant="danger" className="my-2">{msgError}</Alert>}
             </Form>
         </div>

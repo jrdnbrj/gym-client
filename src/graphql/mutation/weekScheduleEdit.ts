@@ -4,9 +4,9 @@ const weekScheduleEdit = gql`
     mutation (
         $weekScheduleID: ID!,
         $workoutTypeName: String,
-        $instructorID: ID!,
-        $startDate: DateTime!, 
-        $days: [Weekday!]!,
+        $instructorID: ID,
+        $startDate: DateTime, 
+        $days: [Weekday!],
         $price: Float,
     ) {
         weekScheduleEdit(

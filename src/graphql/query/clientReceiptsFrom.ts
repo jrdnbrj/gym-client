@@ -1,12 +1,13 @@
 import gql from "graphql-tag";
 
-const clientReceiptFrom = gql`
+const clientReceiptsFrom = gql`
     query ($weekScheduleID: ID, $clientID: ID!, $monthDate: DateTime) {
-        clientReceiptFrom(
+        clientReceiptsFrom(
             weekScheduleID: $weekScheduleID, 
             clientID: $clientID, 
             monthDate: $monthDate
         ) {
+            id
             transactionDate
             workoutTypeName
             paidForMonthsDates
@@ -15,4 +16,4 @@ const clientReceiptFrom = gql`
     }
 `;
 
-export default clientReceiptFrom;
+export default clientReceiptsFrom;

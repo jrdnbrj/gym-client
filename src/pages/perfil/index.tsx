@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 
 import * as EmailValidator from "email-validator";
 
 import userEditInfo from "../../graphql/mutation/userEditInfo";
+import clientReceiptsFrom from "../../graphql/query/clientReceiptsFrom";
 
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -14,6 +15,8 @@ import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import Alert from "react-bootstrap/Alert";
 import Spinner from "react-bootstrap/Spinner";
+
+import Loading from "../../components/Loading";
 
 
 const paymentData = [
@@ -49,6 +52,10 @@ const Profile = ({ user, refetch }) => {
 
     const router = useRouter();
 
+    const { loading: loadingReceipts, data } = useQuery(clientReceiptsFrom, {
+        variables: { clientID: user.id }
+    });
+    console.log('Data:', data);
     const [editUserInfo, { loading }] = useMutation(userEditInfo, {
         onCompleted: () => {
             refetch();
@@ -105,14 +112,17 @@ const Profile = ({ user, refetch }) => {
     const downloadPdf = data => {
         const args = {
             id: data.id,
-            clase: data.class,
-            precio: data.amount,
-            fecha: data.date,
+            clase: data.workoutTypeName,
+            precio: data.totalAmount,
+            fecha: getTakenAt(data.transactionDate),
             nombre: `${user.firstName} ${user.lastName}`,
             email: user.email
         }
         router.push(`/pdf?${Object.keys(args).map(key => key + '=' + args[key]).join('&')}`);
     }
+
+    if (loadingReceipts)
+        return <Loading name="Comprobantes de Pago" />;
 
     return (
         <Container>
@@ -198,12 +208,12 @@ const Profile = ({ user, refetch }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {paymentData.map((data, i) => (
+                        {data?.clientReceiptsFrom.map((data, i) => (
                             <tr key={i}>
                                 <td>{i+1}</td>
-                                <td>{data.date}</td>
-                                <td>{data.class}</td>
-                                <td>$ {data.amount}</td>
+                                <td>{getTakenAt(data.transactionDate)}</td>
+                                <td>{data.workoutTypeName}</td>
+                                <td>$ {data.totalAmount}</td>
                                 <td>
                                     <i 
                                         className="bi bi-file-pdf" 
