@@ -23,7 +23,7 @@ const WeekSchedules = ({ classes, refetchClasses, instructors, workoutTypes }) =
 
     const getTime = datetime => {
         const date = new Date(datetime);
-        const hours = date.getUTCHours();
+        const hours = date.getHours();
 
         return hours < 10 ? `0${hours}:00` : `${hours}:00`;
     }

@@ -26,14 +26,14 @@ const Calendario = props => {
         if (currentRole === 'instructor')
             return (
                 <Instructor 
-                    classes={data.weekScheduleAll} 
+                    classes={data?.weekScheduleAll} 
                     {...props} 
                 />
             );
         else if (currentRole === 'admin')
             return (
                 <Admin 
-                    classes={data.weekScheduleAll} 
+                    classes={data?.weekScheduleAll} 
                     refetchClasses={refetch} 
                     {...props} 
                 />
@@ -41,7 +41,7 @@ const Calendario = props => {
         else
             return (
                 <Client 
-                    classes={data.weekScheduleAll} 
+                    classes={data?.weekScheduleAll} 
                     refetchClasses={refetch} 
                     {...props} 
                 />

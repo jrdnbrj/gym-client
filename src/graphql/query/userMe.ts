@@ -10,6 +10,21 @@ const userMe = gql`
             isClient
             isInstructor
             isAdmin
+            client {
+                healthRecords {
+                    id
+                    takenAt
+                    takenBy {
+                        firstName
+                        lastName
+                    }
+                    weight
+                    height
+                    pulse
+                    systolicPressure
+                    diastolicPressure
+                }
+            }
         }
     }
 `;

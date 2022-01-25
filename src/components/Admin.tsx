@@ -77,10 +77,10 @@ const Client = ({ classes, refetch }) => {
         let instructor = '';
         let students = [];
 
-        classes.forEach(schedule => {
+        classes?.forEach(schedule => {
             if (schedule.days.includes(day[2])) {
                 const schudelTime = new Date(schedule.startDate);
-                const hourStart = schudelTime.getUTCHours().toString();
+                const hourStart = schudelTime.getHours().toString();
                 const classTime = hour < 10 ? hour.replace('0', '') : hour;
                 
                 if (hourStart === classTime) {
@@ -89,7 +89,7 @@ const Client = ({ classes, refetch }) => {
                         " " + schedule.instructor.lastName;
                     scheduleID = schedule.id;
                     quotas = schedule.quotas;
-                    startDate = schudelTime.toUTCString();
+                    startDate = schudelTime.toString();
                     scheduleDates = schedule.days;
                     type = schedule.workoutType.name;
                     typeEmoji = schedule.workoutType.emoji;

@@ -98,8 +98,8 @@ const Instructor = ({ classes }) => {
     const attendanceToday = date => {
         const todayDate = new Date(date);
         
-        if (todayDate.getUTCDate() === classInfo.today && 
-            todayDate.getUTCMonth() === classInfo.month)
+        if (todayDate.getDate() === classInfo.today && 
+            todayDate.getMonth() === classInfo.month)
             return true;
 
         return false;
@@ -273,7 +273,7 @@ const Instructor = ({ classes }) => {
                 <ListGroup.Item>
                     <strong>Horario: </strong>
                     {classInfo.startDate &&
-                        classInfo.startDate?.toUTCString()?.split(" ")[4]}
+                        classInfo.startDate?.toString()?.split(" ")[4]}
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <strong>Días de clases: </strong>
@@ -333,10 +333,10 @@ const Instructor = ({ classes }) => {
         let type = "";
         let typeEmoji = "";
 
-        classes.forEach(schedule => {
+        classes?.forEach(schedule => {
             if (schedule.days.includes(day[2])) {
                 const schudelTime = new Date(schedule.startDate);
-                const hourStart = schudelTime.getUTCHours().toString();
+                const hourStart = schudelTime.getHours().toString();
                 const classTime = hour < 10 ? hour.replace('0', '') : hour;
 
                 if (hourStart === classTime) {

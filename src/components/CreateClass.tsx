@@ -62,6 +62,7 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
     );
 
     useEffect(() => {
+        // console.log("formData:", formData);
         if (formValid)
             createSchedule({ variables: { ...formData } });
     }, [formData])
@@ -72,7 +73,19 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
     }, [data]);
 
     const handleControlChange = e => {
-        setFormData({ ...formData, [e.target.id]: e.target.value });
+        if (e.target.id === "startDate") {
+            const startDate = new Date();
+            startDate.setHours(e.target.value.split(":")[0]);
+            startDate.setMinutes(0);
+            startDate.setSeconds(0);
+            console.log("Date:", startDate.toISOString());
+            setFormData({ ...formData, startDate: startDate.toISOString() });
+        } else if (e.target.id === "price") {
+            const price = parseFloat(e.target.value);
+            setFormData({ ...formData, price });
+        } else 
+            setFormData({ ...formData, [e.target.id]: e.target.value });
+
         setFormValid(false);
         setMsgError("");
     };
@@ -114,14 +127,6 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
         if (formData.price === "") {
             setMsgError("Ingresa un precio.");
             return;
-        } else {
-            const price = parseFloat(formData.price);
-            if (isNaN(price)) {
-                setMsgError("Ingresa un precio válido.");
-                return;
-            }
-
-            setFormData({ ...formData, price });
         }
 
         if (formData.weekDays.length === 0) {
@@ -131,6 +136,16 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
 
         setMsgError("");
         setFormValid(true);
+
+        setFormData({ ...formData });
+    }
+
+    const startDateValue = () => {
+        console.log("startDate:", formData.startDate);
+        const date = new Date(formData.startDate);
+        const hours = date.getHours();
+        console.log("hours:", hours);
+        return hours < 10 ? `0${hours}:00` : `${hours}:00`;
     }
 
     return (
@@ -155,7 +170,7 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
                     </Form.Select>
                 </FloatingLabel>
                 <FloatingLabel controlId="startDate" label="Hora de Clase">
-                    <Form.Select value={formData.startDate} onChange={handleControlChange}>
+                    <Form.Select value={startDateValue()} onChange={handleControlChange}>
                         <option hidden>Escoge un horario</option>
                         {hours.map((hour, i) => {
                             return <option key={i} value={hour}>{hour}</option>
@@ -163,7 +178,7 @@ const CreateClass = ({ workoutTypes, instructors, refetchClasses, closeModal }) 
                     </Form.Select>
                 </FloatingLabel>
                 <FloatingLabel controlId="price" label="Ingresa el precio mensual" className="my-2">
-                    <Form.Control type="number" placeholder="100" onChange={handleControlChange} />
+                    <Form.Control type="number" placeholder="100" onChange={handleControlChange} step=".01" />
                 </FloatingLabel>
                 <ListGroup className="my-2">
                     <ListGroup.Item>
