@@ -13,38 +13,18 @@ const CarouselHome = () => {
         <Carousel>
             <Carousel.Item>
                 <Image className="d-block" src={carousel1} />
-                <Carousel.Caption>
-                    <h3>First sllide labe</h3>
-                    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item>
                 <Image className="d-block" src={carousel3} />
-                <Carousel.Caption>
-                    <h3>Third slide label</h3>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item>
                 <Image className="d-block" src={carousel4} />
-                <Carousel.Caption>
-                    <h3>Third slide label</h3>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item>
                 <Image className="d-block" src={carousel5} />
-                <Carousel.Caption>
-                    <h3>Third slide label</h3>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item>
                 <Image className="d-block" src={carousel6} />
-                <Carousel.Caption>
-                    <h3>Third slide label</h3>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-                </Carousel.Caption>
             </Carousel.Item>
         </Carousel>
     );

@@ -60,6 +60,12 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
         setFormData({ ...formData, [event.target.id]: event.target.value });
     };
 
+    // with regex
+    const validateName = text => {
+        const regex = /^[a-z ,.'-]+$/i;
+        return regex.test(text);
+    };
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         event.stopPropagation();
@@ -74,8 +80,18 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
             return;
         }
 
+        if (!validateName(formData.firstName)) {
+            setErrorMsg("Tu nombre debe tener solo letras.");
+            return;
+        }
+
         if (formData.lastName.length < 3) {
             setErrorMsg("Tu apellido debe tener al menos 3 caracteres.");
+            return;
+        }
+
+        if (!validateName(formData.lastName)) {
+            setErrorMsg("Tu apellido debe tener solo letras.");
             return;
         }
 
