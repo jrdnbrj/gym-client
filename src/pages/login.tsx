@@ -35,7 +35,8 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
     const user = useSelector((state: any) => state.user.user);
 
     useEffect(() => {
-        if (user.id) window.location.href = "/";
+        if (user.id)
+            router.push("/");
     } , [user]);
 
     const [login, { loading, error, data, reset }] = useMutation(userLogin, {
@@ -62,54 +63,46 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
     const [token, setToken] = useState("");
     const [password, setPassword] = useState("");
 
-    const [validated, setValidated] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "" });
+    const [errorMsg, setErrorMsg] = useState();
     const [isControlValid, setIsControlValid] = useState({
         email: false,
         password: false,
     });
 
-    const handleControlChange = ({
-        target,
-    }: React.ChangeEvent<HTMLInputElement>) => {
-        // TODO: set ifValid for each form control based on isControlValid.
+    const handleControlChange = ({ target }) => {
         setFormData({ ...formData, [target.id]: target.value });
-        setValidated(false);
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         event.stopPropagation();
 
-        setValidated(true);
-
-        // Validate data
-        let isFormValid = true;
         if (!EmailValidator.validate(formData.email)) {
-            setIsControlValid({ ...isControlValid, email: false });
-            isFormValid = false;
+            setErrorMsg("Tu email es incorrecto.");
+            return;
         }
 
-        if (!formData.password) {
-            setIsControlValid({ ...isControlValid, password: false });
-            isFormValid = false;
+        if (formData.password.length < 2) {
+            setErrorMsg("La contraseña es incorrecta.");
+            return;
         }
 
-        if (isFormValid) {
-            setValidated(false);
-
-            reset();
-            login({ variables: formData })
-        }
+        login({ variables: formData })
     };
 
     const [forgot, setForgot] = useState(false);
 
     const onChangeForgot = () => forgotPassword({ variables: { userEmail: email } });
 
+    const onForgot = () => {
+        setForgot(true);
+        setEmail(formData.email);
+    };
+
     return (
         <Container>
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit}>
                 <FormGroup controlId="email" className="mb-3">
                     <FormLabel>Email</FormLabel>
                     <FormControl
@@ -135,15 +128,13 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
                 </FormGroup>
 
                 <Button variant="primary" type="submit" className="mb-3">
-                    {loading ? <Spinner size="sm" /> : ""}
+                    {loading && <Spinner animation="border" variant="light" size="sm" className="me-1" />}
                     Ingresar
                 </Button>
-                <span
-                    className="forgot-password"
-                    onClick={() => setForgot(true)}
-                >
+                <span className="forgot-password" onClick={onForgot}>
                     Olvidé la contraseña
                 </span>
+                {errorMsg && <Alert variant="danger">{errorMsg}</Alert>}
                 {forgot && 
                     <>
                         <FloatingLabel label="Ingresa tu email">

@@ -6,6 +6,8 @@ import FormLabel from "react-bootstrap/FormLabel";
 import FormControl from "react-bootstrap/FormControl";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import Alert from "react-bootstrap/Alert";
 
 import * as EmailValidator from "email-validator";
 
@@ -20,7 +22,7 @@ import NotOkFeedback from "../components/NotOkFeedback";
 
 import { useMutation } from "@apollo/client/react";
 import userRegister from "../graphql/mutation/userRegister";
-import { Alert } from "react-bootstrap";
+
 
 export interface RegisterProps {}
 export interface RegisterFormProps {}
@@ -28,10 +30,7 @@ export interface RegisterFormProps {}
 const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
     const router = useRouter();
 
-    const [register, { loading, error, data, reset }] =
-        useMutation(userRegister);
-
-    const [validated, setValidated] = useState(false);
+    const [errorMsg, setErrorMsg] = useState();
     const [formData, setFormData] = useState({
         email: "",
         firstName: "",
@@ -41,91 +40,57 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
         isInstructor: false,
         isAdmin: false,
     });
-    const [isDataValid, setIsDataValid] = useState({
-        email: false,
-        firstName: false,
-        lastName: false,
-        password: false,
-    });
+
+    const [register, { loading, error, data, reset }] = useMutation(
+        userRegister, {
+            onCompleted: () => {
+                router.push("/login");
+                reset()
+            },
+            onError: (error) => {
+                console.log(error);
+                setErrorMsg(error.message);
+            }
+        }
+    );     
 
     const handleControlChange = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
-        // TODO: set ifValid for each form control based on isControlValid.
         setFormData({ ...formData, [event.target.id]: event.target.value });
-        setValidated(false);
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         event.stopPropagation();
 
-        setValidated(true);
-
-        // Validate data
-        let isFormValid = true;
-
         if (!EmailValidator.validate(formData.email)) {
-            setIsDataValid({ ...isDataValid, email: false });
-            isFormValid = false;
+            setErrorMsg("Debes ingresar un email válido.");
+            return;
         }
 
-        if (!formData.firstName) {
-            setIsDataValid({ ...isDataValid, firstName: false });
-            isFormValid = false;
+        if (formData.firstName.length < 3) {
+            setErrorMsg("Tu nombre debe tener al menos 3 caracteres.");
+            return;
         }
 
-        if (!formData.lastName) {
-            setIsDataValid({ ...isDataValid, lastName: false });
-            isFormValid = false;
+        if (formData.lastName.length < 3) {
+            setErrorMsg("Tu apellido debe tener al menos 3 caracteres.");
+            return;
         }
 
-        if (!formData.password) {
-            setIsDataValid({ ...isDataValid, password: false });
-            isFormValid = false;
+        if (formData.password.length < 6) {
+            setErrorMsg("Tu contraseña debe tener al menos 6 caracteres.");
+            return;
         }
 
-        console.log("Valid form!");
-        console.log(formData);
-        // API request
-        if (isFormValid) {
-            setValidated(false);
-
-            // TODO: redirect to login after successful register.
-            reset();
-            register({ variables: formData }).catch((e) => console.log(e));
-        }
-    };
-
-    const RequestStatus = (): JSX.Element | null => {
-        let message = "";
-        let isError = false;
-
-        if (data?.userRegister?.id) {
-            alert("Usuario registrado con éxito, por favor inicia sesión.");
-            router.push("/login");
-        }
-
-        if (loading) {
-            message = "Cargando...";
-        } else if (error) {
-            message = error.message;
-            isError = true;
-        }
-
-        if (message)
-            return (
-                <Alert variant={isError ? "danger" : undefined}>
-                    {message}
-                </Alert>
-            );
-
-        return null;
+        console.log("formData:", formData);
+        register({ variables: formData })
     };
 
     return (
         <Container>
-            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit}>
                 <FormGroup controlId="firstName" className="mb-3">
                     <FormLabel>Nombre</FormLabel>
                     <FormControl
@@ -173,11 +138,11 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
                     />
                 </FormGroup>
                 <Button variant="primary" type="submit" className="mb-3">
+                    {loading && <Spinner animation="border" size="sm" className="me-1" />}
                     Registrarse
                 </Button>
             </Form>
-
-            <RequestStatus />
+            {errorMsg && <Alert variant="danger" className="my-3">{errorMsg}</Alert>}
         </Container>
     );
 };

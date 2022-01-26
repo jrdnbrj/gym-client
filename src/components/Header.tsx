@@ -76,7 +76,7 @@ const Header = ({ user, role, refetch }) => {
                                     Ver Como Admin
                                 </NavDropdown.Item>
                             }
-                            {role === "admin" || role === "instructor" &&
+                            {(role === "admin" || role === "instructor") &&
                                 <NavDropdown.Item 
                                     onClick={() => router.push("/admin/usuarios")}
                                 >

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useMutation } from "@apollo/client";
@@ -61,18 +62,6 @@ const RegisterPayment = ({ users, classes }) => {
 
     const getDays = scheduleDates => {
         return scheduleDates.map(day => days[day]).join(", ");
-    }
-
-    const dowloadPdf = () => {
-        const args = {
-            id: data.id,
-            clase: data.class,
-            precio: data.amount,
-            fecha: data.date,
-            nombre: `${user.firstName} ${user.lastName}`,
-            email: user.email
-        }
-        router.push(`/pdf?${Object.keys(args).map(key => key + '=' + args[key]).join('&')}`);
     }
 
     const onSubmit = (e) => {
@@ -147,7 +136,7 @@ const RegisterPayment = ({ users, classes }) => {
             </Form>
             {paymentCompleted && 
                 <Alert variant="success" className="my-3">
-                    ✔️ El pago se ha registrado con éxito. <span onClick={dowloadPdf}>Descarga el comprobante.</span>
+                    ✔️ El pago se ha registrado con éxito. Puedes descargar el comprobante en tu <Link href="/perfil">perfil</Link>.
                 </Alert>}
         </Container>
     );
