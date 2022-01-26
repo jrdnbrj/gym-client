@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Button from "react-bootstrap/Button";
 import Alert from "react-bootstrap/Alert";
+import Spinner from "react-bootstrap/Spinner";
 
 
 const days = {
@@ -30,11 +31,16 @@ const RegisterPayment = ({ users, classes }) => {
     const [paymentCompleted, setPaymentCompleted] = useState(false);
 
     const [submitPayment, { loading }] = useMutation(adminSubmitPayment, {
-        onCompleted: () => alert("Pago registrado con éxito."),
+        onCompleted: () => {
+            alert("Pago registrado con éxito.");
+            setPaymentCompleted(true);
+            setFormData({ clientID: "", weekScheduleID: "", months: 1 });
+        },
         onError: error => alert(error.message)
     });
 
     const handleControlChange = e => {
+        setPaymentCompleted(false);
         if (e.target.id === "clientID")
             setFormData({ "clientID": e.target.value, weekScheduleID: "", months: 1 });
         else 
@@ -49,13 +55,12 @@ const RegisterPayment = ({ users, classes }) => {
     const getTime = startDate => {
         const date = new Date(startDate);
         const hours = date.getHours();
+
         return hours < 10 ? `0${hours}:00` : `${hours}:00`;
     }
 
     const getDays = scheduleDates => {
-        return scheduleDates
-            .map(day => days[day])
-            .join(", ");
+        return scheduleDates.map(day => days[day]).join(", ");
     }
 
     const dowloadPdf = () => {
@@ -76,7 +81,6 @@ const RegisterPayment = ({ users, classes }) => {
         const months = parseInt(formData.months);
         setFormData({ ...formData, months });
 
-        console.log(formData);
         setFormValid(true);
     }
 
@@ -136,6 +140,7 @@ const RegisterPayment = ({ users, classes }) => {
                             </Form.Select>
                         </FloatingLabel>
                         <Button variant="primary" type="submit" className="my-2">
+                            {loading && <Spinner animation="grow" size="sm" className="me-1" />}
                             Registrar Pago
                         </Button>
                     </>}

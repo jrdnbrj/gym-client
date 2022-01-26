@@ -17,6 +17,7 @@ import Spinner from "react-bootstrap/Spinner";
 import Loading from "../../components/Loading";
 import UsersList from "../../components/UsersList"
 import RegisterPayment from "../../components/RegisterPayment";
+import RegisterHealthRecords from "../../components/RegisterHealthRecords";
 
 
 const usuarios = ({ role }) => {
@@ -26,10 +27,10 @@ const usuarios = ({ role }) => {
     const { loading, error, data, refetch } = useQuery(userAll);
     const { loading: loadingClasses, data: dataClasses } = useQuery(weekScheduleAll);
 
-    // useEffect(() => {
-    //     if (role !== "admin")
-    //         router.push("/calendario"); 
-    // }, [role]);
+    useEffect(() => {
+        if (role === "client")
+            router.push("/calendario"); 
+    }, [role]);
 
     if (loading)
         return <Loading name="Usuarios" />;
@@ -39,14 +40,21 @@ const usuarios = ({ role }) => {
 
     return (
         <>
-            <UsersList 
-                users={data?.userAll} 
-                refetchUsers={refetch}
-            />
-            <RegisterPayment 
-                users={data?.userAll}
-                classes={dataClasses?.weekScheduleAll}
-            />
+            {role === "admin" && 
+                <>
+                    <UsersList 
+                        users={data?.userAll} 
+                        refetchUsers={refetch}
+                    />
+                    <RegisterPayment 
+                        users={data?.userAll}
+                        classes={dataClasses?.weekScheduleAll}
+                    />
+                </>}
+            {(role === "admin" || role === "instructor") && 
+                <RegisterHealthRecords
+                    users={data?.userAll}
+                />}
         </>
     )
 }

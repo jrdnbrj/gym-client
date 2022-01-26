@@ -76,19 +76,19 @@ const Header = ({ user, role, refetch }) => {
                                     Ver Como Admin
                                 </NavDropdown.Item>
                             }
+                            {role === "admin" || role === "instructor" &&
+                                <NavDropdown.Item 
+                                    onClick={() => router.push("/admin/usuarios")}
+                                >
+                                    Usuarios
+                                </NavDropdown.Item>
+                            }
                             {role === "admin" &&
-                                <>
-                                    <NavDropdown.Item 
-                                        onClick={() => router.push("/admin/usuarios")}
-                                    >
-                                        Usuarios
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item 
-                                        onClick={() => router.push("/admin/clases")}
-                                    >
-                                        Clases
-                                    </NavDropdown.Item>
-                                </>
+                                <NavDropdown.Item 
+                                    onClick={() => router.push("/admin/clases")}
+                                >
+                                    Clases
+                                </NavDropdown.Item>
                             }
                             <NavDropdown.Divider />
                             <NavDropdown.Item onClick={() => logout()}>
