@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 const attendanceRecordCreate = gql`
-    mutation ($weekScheduleID: Float!) {
+    mutation ($weekScheduleID: ID!) {
         attendanceRecordCreate(weekScheduleID: $weekScheduleID) {
             date
             attendance {

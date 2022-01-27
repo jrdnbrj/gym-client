@@ -36,7 +36,7 @@ const LoginForm = (_props: LoginFormProps): JSX.Element => {
 
     useEffect(() => {
         if (user.id)
-            router.push("/");
+            window.location.href = "/";
     } , [user]);
 
     const [login, { loading, error, data, reset }] = useMutation(userLogin, {

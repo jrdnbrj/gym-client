@@ -73,6 +73,11 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
             setErrorMsg('El nombre no puede estar vacío.');
             return;
         }
+        console.log(name, validateName(name));
+        if (!validateName(name)) {
+            setErrorMsg('El nombre no puede contener caracteres especiales o números.');
+            return;
+        }
 
         if (emoji.length === 0) {
             setErrorMsg('El emoji no puede estar vacío.');
@@ -105,6 +110,11 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
         if (confirm(`¿Estás seguro que de eliminar el tipo de clase "${name}"?`))
             deleteWorkoutType({ variables: { name } });
     }
+
+    const validateName = text => {
+        const regex = /^[a-z ]+$/i;
+        return regex.test(text);
+    };
 
     const ModalBody = () => {
         return (
@@ -156,7 +166,11 @@ const WorkoutTypes = ({ workoutTypes, refetchTypes, refetchClasses }) => {
                 ))}
                 <Col 
                     className="workout-type add-type"
-                    onClick={() => setShowModal(true)}
+                    onClick={() => {
+                        setTypeName('');
+                        setTypeEmoji('');
+                        setShowModal(true)
+                    }}
                 >
                     <span>Agregar</span>
                     <i className="bi bi-plus-circle ms-2" />

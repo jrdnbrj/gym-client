@@ -60,9 +60,8 @@ const RegisterForm = (_props: RegisterFormProps): JSX.Element => {
         setFormData({ ...formData, [event.target.id]: event.target.value });
     };
 
-    // with regex
     const validateName = text => {
-        const regex = /^[a-z ,.'-]+$/i;
+        const regex = /^[a-z ]+$/i;
         return regex.test(text);
     };
 

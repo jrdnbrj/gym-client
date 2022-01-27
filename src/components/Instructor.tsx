@@ -55,7 +55,7 @@ const Instructor = ({ classes }) => {
                 console.log("Se ha registrado la asistencia.");
             },
             onError: error => {
-                console.log(error.message);
+                console.log("Error en attendanceCreate:", error.message);
             }
         }
     );
@@ -66,8 +66,8 @@ const Instructor = ({ classes }) => {
                 console.log("1Se ha registrado la asistencia.");
             },
             onError: error => {
-                console.log(error.message);
                 console.log("1Ha ocurrido un error al registrar la asistencia. Intenta nuevamente.");
+                console.log(error.message);
             }
         }
     );
@@ -78,8 +78,8 @@ const Instructor = ({ classes }) => {
                 console.log("2Se ha registrado la asistencia.");
             },
             onError: error => {
-                console.log(error.message);
                 console.log("2Ha ocurrido un error al registrar la asistencia. Intenta nuevamente.");
+                console.log(error.message);
             }
         }
     );
@@ -113,7 +113,7 @@ const Instructor = ({ classes }) => {
             return <Spinner animation="border" variant="primary" />;
 
         return attendanceData?.attendanceRecordAll?.map(item => {
-            if (item.weekSchedule.id !== parseInt(classInfo.scheduleID))
+            if (item.weekSchedule.id !== classInfo.scheduleID)
                 return null;
 
             return item.attendance.map((attendance, i) => {
@@ -193,19 +193,26 @@ const Instructor = ({ classes }) => {
         e.preventDefault();
 
         const noAssisted = []
-        const assisted = classInfo.attendedIDs.map(id => parseInt(id))
+        const assisted = classInfo.attendedIDs.map(id => id)
         
         classInfo.students.forEach(student => {
             if (!classInfo.attendedIDs.includes(student.id))
-                noAssisted.push(parseInt(student.id));
+                noAssisted.push(student.id);
         })
 
+        console.log("assisted:", assisted);
+        console.log("noAssisted:", noAssisted);
+        console.log("scheduleID2:", classInfo.scheduleID);
+
+
+        // setTimeout(() => {
         await attendanceSetAssisted({
             variables: {
                 notAssistedIDs: assisted,
                 weekScheduleID: classInfo.scheduleID,
             }
         });
+        // }, 2000);
 
         await attendanceSetNotAssisted({
             variables: {
@@ -314,6 +321,7 @@ const Instructor = ({ classes }) => {
     ) => {
         // console.log('attendanceData', attendanceData.attendanceRecordAll.filter(item => 
         //     (item.weekSchedule.id === parseInt(scheduleID))))
+        console.log("scheduleID:", scheduleID)
         attendanceCreate({ variables: { weekScheduleID: scheduleID } });
         setClassInfo({ 
             ...classInfo, quotas, startDate, scheduleDates, 

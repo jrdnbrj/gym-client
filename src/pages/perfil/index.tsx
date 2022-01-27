@@ -80,8 +80,18 @@ const Profile = ({ user, refetch }) => {
             return;
         }
 
+        if (validateName(firstName)) {
+            setErrorMsg("Tu nombre debe tener solo letras.");
+            return;
+        }
+
         if (lastName.length === 0) {
             setErrorMsg("Debes ingresar un apellido.");
+            return;
+        }
+
+        if (validateName(lastName)) {
+            setErrorMsg("Tu apellido debe tener solo letras.");
             return;
         }
 
@@ -109,9 +119,14 @@ const Profile = ({ user, refetch }) => {
         return `${fecha} ${time}`;
     }
 
-    const downloadPdf = data => {
+    const validateName = text => {
+        const regex = /^[a-z ]+$/i;
+        return regex.test(text);
+    };
+
+    const downloadPdf = (data, i) => {
         const args = {
-            id: data.id,
+            id: `0${i+13}`,
             clase: data.workoutTypeName,
             precio: data.totalAmount,
             fecha: getTakenAt(data.transactionDate),
@@ -217,7 +232,7 @@ const Profile = ({ user, refetch }) => {
                                 <td>
                                     <i 
                                         className="bi bi-file-pdf" 
-                                        onClick={() => downloadPdf(data)}
+                                        onClick={() => downloadPdf(data, i+1)}
                                         title="Descargar Comprobante" 
                                     />
                                 </td>

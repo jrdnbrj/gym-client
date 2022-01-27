@@ -60,8 +60,8 @@ const Client = ({ classes, refetch }) => {
         </>
     }
 
-    const openModal = (quotas, startDate, scheduleDates, scheduleID, type, busy, instructor, students) => {
-        setClassInfo({ ...classInfo, quotas, startDate, scheduleDates, scheduleID, type, instructor, students });
+    const openModal = (quotas, startDate, price, scheduleDates, scheduleID, type, busy, instructor, students) => {
+        setClassInfo({ ...classInfo, quotas, startDate, price, scheduleDates, scheduleID, type, instructor, students });
         setModalTitle(`Clase de ${type}`);
         setShowModal(true)
     }
@@ -76,6 +76,7 @@ const Client = ({ classes, refetch }) => {
         let typeEmoji = '';
         let instructor = '';
         let students = [];
+        let price = 0;
 
         classes?.forEach(schedule => {
             if (schedule.days.includes(day[2])) {
@@ -94,13 +95,14 @@ const Client = ({ classes, refetch }) => {
                     type = schedule.workoutType.name;
                     typeEmoji = schedule.workoutType.emoji;
                     available = true;
+                    price = schedule.price;
                 }
             }
         })
 
         const variables = busy => {
             return openModal(
-                quotas, startDate, 
+                quotas, startDate, price,
                 scheduleDates, scheduleID, 
                 type, busy, instructor, students
             );

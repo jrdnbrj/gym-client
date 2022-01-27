@@ -30,7 +30,7 @@ const pdf = () => {
     return <div ref={body}>
         <Style>{` 
             .invoice-box {
-                max-width: 800px;
+                max-width: 600px;
                 padding: 30px;
                 border: 0;
                 font-size: 16px;
