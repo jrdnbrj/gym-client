@@ -80,7 +80,7 @@ const Profile = ({ user, refetch }) => {
             return;
         }
 
-        if (validateName(firstName)) {
+        if (!validateName(firstName)) {
             setErrorMsg("Tu nombre debe tener solo letras.");
             return;
         }
@@ -90,7 +90,7 @@ const Profile = ({ user, refetch }) => {
             return;
         }
 
-        if (validateName(lastName)) {
+        if (!validateName(lastName)) {
             setErrorMsg("Tu apellido debe tener solo letras.");
             return;
         }
