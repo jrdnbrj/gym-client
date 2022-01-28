@@ -1,9 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 import { Style } from "react-style-tag";
 import jsPDF from "jspdf";
 import html2canvas from 'html2canvas';
+
+import radikalLogo from "../assets/images/radikal-logo.jpeg";
 
 
 const pdf = () => {
@@ -101,6 +104,7 @@ const pdf = () => {
                                     Recibo #: {id}<br />
                                     Fecha de Pago: {fecha}<br />
                                 </td>
+                                <Image src={radikalLogo} alt="radikal-logo" width={130} height={100} />
                             </tr>
                         </table>
                     </td>

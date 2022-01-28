@@ -55,7 +55,6 @@ const Profile = ({ user, refetch }) => {
     const { loading: loadingReceipts, data } = useQuery(clientReceiptsFrom, {
         variables: { clientID: user.id }
     });
-    console.log('Data:', data);
     const [editUserInfo, { loading }] = useMutation(userEditInfo, {
         onCompleted: () => {
             refetch();
