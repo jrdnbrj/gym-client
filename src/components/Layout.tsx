@@ -13,6 +13,7 @@ const Layout = ({ Component, pageProps, children }) => {
     const router = useRouter();
     const dispatch = useDispatch();
     const { data, refetch } = useQuery(userMe);
+    console.log("User Me:", data)
     
     const role = useSelector(state => state.user.currentRole);
     const user = useSelector(state => state.user.user);

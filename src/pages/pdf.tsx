@@ -14,7 +14,7 @@ const pdf = () => {
     const router = useRouter();
     const body = useRef(null);
 
-    const { clase, precio, id, fecha, nombre, email } = router.query;
+    const { clase, precio, id, fecha, nombre, email, path } = router.query;
 
     useEffect(() => {
         if (!email) return;
@@ -26,7 +26,7 @@ const pdf = () => {
             pdf.addImage(imgData, 'JPEG', 0, 0);
             pdf.save(`radikal_gym_pago_${id}.pdf`);
 
-            router.push("/perfil");
+            router.push(path);
         });
     }, [email]);
 

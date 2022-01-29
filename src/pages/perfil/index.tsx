@@ -19,33 +19,6 @@ import Spinner from "react-bootstrap/Spinner";
 import Loading from "../../components/Loading";
 
 
-const paymentData = [
-    {
-        id: 1,
-        date: "2020-01-01",
-        amount: "100",
-        class: "Aerobicos"
-    },
-    {
-        id: 2,
-        date: "2020-01-02",
-        amount: "200",
-        class: "Fuerza"
-    },
-    {
-        id: 3,
-        date: "2020-01-03",
-        amount: "300",
-        class: "Artes Marciales"
-    },
-    {
-        id: 4,
-        date: "2020-01-04",
-        amount: "400",
-        class: "Estiramiento"
-    }
-];
-
 const Profile = ({ user, refetch }) => {
 
     const [errorMsg, setErrorMsg] = useState();
@@ -130,7 +103,8 @@ const Profile = ({ user, refetch }) => {
             precio: data.totalAmount,
             fecha: getTakenAt(data.transactionDate),
             nombre: `${user.firstName} ${user.lastName}`,
-            email: user.email
+            email: user.email,
+            path: '/perfil'
         }
         router.push(`/pdf?${Object.keys(args).map(key => key + '=' + args[key]).join('&')}`);
     }

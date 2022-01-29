@@ -8,9 +8,11 @@ import { useQuery, useMutation } from "@apollo/client";
 import userAll from "../../graphql/query/userAll";
 import workoutTypeAll from "../../graphql/query/workoutTypeAll";
 import weekScheduleAll from "../../graphql/query/weekScheduleAll";
+import receiptAll from "../../graphql/query/receiptAll";
 
 import WeekSchedules from "../../components/WeekSchedules";
 import WorkoutTypes from "../../components/WorkoutTypes";
+import Receipts from "../../components/Receipts";
 import Loading from "../../components/Loading";
 
 
@@ -25,6 +27,7 @@ const clases = ({ role }) => {
         data: dataClasses, 
         refetch: refetchClasses 
     } = useQuery(weekScheduleAll);
+    const { data: receipts, loading: loadingReceipts } = useQuery(receiptAll);
 
     useEffect(() => {
         if (role !== "admin")
@@ -40,6 +43,9 @@ const clases = ({ role }) => {
     if (loadingClasses)
         return <Loading name="Clases" />;
 
+    if (loadingReceipts)
+        return <Loading name="Comprobantes de Pago" />;
+
     return (
         <Container>
             <WorkoutTypes 
@@ -53,6 +59,7 @@ const clases = ({ role }) => {
                 classes={dataClasses?.weekScheduleAll}
                 instructors={users?.userAll?.filter(user => user.isInstructor)}
             />
+            <Receipts receipts={receipts?.receiptAll} />
         </Container>
     );
 }
