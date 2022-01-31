@@ -8,6 +8,7 @@ const weekScheduleEdit = gql`
         $startDate: DateTime, 
         $days: [Weekday!],
         $price: Float,
+        $quotas: Int,
     ) {
         weekScheduleEdit(
             weekScheduleID: $weekScheduleID,
@@ -16,6 +17,7 @@ const weekScheduleEdit = gql`
             startDate: $startDate
             days: $days
             price: $price
+            quotas: $quotas
         ) {
             id
         }

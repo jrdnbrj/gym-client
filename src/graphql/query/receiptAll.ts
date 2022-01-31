@@ -6,6 +6,7 @@ const receiptAll = gql`
             id
             transactionDate
             clientID
+            clientFullName
             clientEmail
             weekScheduleID
             weekScheduleID

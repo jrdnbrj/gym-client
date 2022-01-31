@@ -33,11 +33,11 @@ const RegisterPayment = ({ users, classes }) => {
 
     const [submitPayment, { loading }] = useMutation(adminSubmitPayment, {
         onCompleted: () => {
-            alert("Pago registrado con éxito.");
             setPaymentCompleted(true);
             setFormData({ clientID: "", weekScheduleID: "", months: 1 });
         },
-        onError: error => alert(error.message)
+        onError: error => {}
+        // onError: error => alert(error.message)
     });
 
     const handleControlChange = e => {

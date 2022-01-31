@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { useMutation } from "@apollo/client";
 import adminUserRoles from "../graphql/mutation/adminUserRoles";
+
+import ReactPaginate from "react-paginate";
 
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
@@ -13,6 +15,9 @@ import Loading from "./Loading";
 
 
 const UsersList = ({ users, refetchUsers }) => {
+
+    const [pages, setPages] = useState([[]]);
+    const [currentPage, setCurrentPage] = useState(0);
 
     const [userRoles, { loading }] = useMutation(adminUserRoles, {
         onCompleted: () => refetchUsers(),
@@ -59,6 +64,21 @@ const UsersList = ({ users, refetchUsers }) => {
             userRoles({ variables: { userID, isClient, isInstructor, isAdmin } });
     }
 
+    // users in array of arrays, 5 users per page
+    useEffect(() => {
+        if (users) {
+            const usersPerPage = 5;
+            const numberOfPages = Math.ceil(users.length / usersPerPage);
+            const pagess = [];
+
+            for (let i = 0; i < numberOfPages; i++)
+                pagess.push(users.slice(i * usersPerPage, (i + 1) * usersPerPage));
+
+            console.log("Pagess: ", pagess);
+            setPages(pagess);
+        }
+    }, [users]);
+
     if (loading)
         return <Loading name="Roles" />;
 
@@ -70,14 +90,9 @@ const UsersList = ({ users, refetchUsers }) => {
                         <ListGroup.Item>
                             <strong>DEPORTISTAS</strong>
                         </ListGroup.Item>
-                        {users.map(user => {
-                            if (!user.isClient)
-                                return null
-                            
-                            const name = `${user.firstName} ${user.lastName}`;
-
-                            return <ListGroup.Item key={user.id} className="user-list">
-                                {name}
+                        {pages[currentPage].map((user, index) => (
+                            <ListGroup.Item key={user?.id} className="user-list">
+                                {`${user.firstName} ${user.lastName}`}
                                 {!user.isInstructor &&
                                     <Button 
                                         variant="success" title="hacer instructor" className="mx-1"
@@ -87,7 +102,27 @@ const UsersList = ({ users, refetchUsers }) => {
                                     </Button>
                                 }
                             </ListGroup.Item>
-                        })}
+                        ))}
+                        <ReactPaginate
+                            breakLabel="..."
+                            nextLabel=">"
+                            onPageChange={e => setCurrentPage(e.selected)}
+                            pageRangeDisplayed={1}
+                            pageCount={pages.length}
+                            // marginPagesDisplayed={0}
+                            previousLabel="<"
+                            renderOnZeroPageCount={null}
+                            pageClassName="page-item"
+                            pageLinkClassName="page-link"
+                            previousClassName="page-item"
+                            previousLinkClassName="page-link"
+                            nextClassName="page-item"
+                            nextLinkClassName="page-link"
+                            breakClassName="page-item"
+                            breakLinkClassName="page-link"
+                            containerClassName="pagination"
+                            activeClassName="active"
+                        />
                     </ListGroup>
                 </Col>
                 <Col>

@@ -40,21 +40,21 @@ const usuarios = ({ role }) => {
 
     return (
         <>
-            {role === "admin" && 
-                <>
-                    <UsersList 
-                        users={data?.userAll} 
-                        refetchUsers={refetch}
-                    />
-                    <RegisterPayment 
-                        users={data?.userAll}
-                        classes={dataClasses?.weekScheduleAll}
-                    />
-                </>}
             {(role === "admin" || role === "instructor") && 
                 <RegisterHealthRecords
                     users={data?.userAll}
                 />}
+            {role === "admin" && 
+                <>
+                    <RegisterPayment 
+                        users={data?.userAll}
+                        classes={dataClasses?.weekScheduleAll}
+                    />
+                    <UsersList 
+                        users={data?.userAll} 
+                        refetchUsers={refetch}
+                    />
+                </>}
         </>
     )
 }

@@ -41,6 +41,8 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
         weekDays: [],
         days: [],
         price: "",
+        quotas: "",
+        students: []
     });
 
     const { data } = useQuery(userAll);
@@ -56,6 +58,8 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
                     weekDays: [],
                     days: [],
                     price: "",
+                    quotas: "",
+                    students: []
                 });
                 setMsgError("");
                 resetEdit();
@@ -63,7 +67,7 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
             },
             onError: error => {
                 console.log("editSchedule Error:", error.message);
-                setMsgError("Error al editar la clase. Inténtalo de nuevo.");
+                setMsgError(error.message);
             }
         }
     );
@@ -79,6 +83,8 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
                     weekDays: [],
                     days: [],
                     price: "",
+                    quotas: "",
+                    students: []
                 });
                 setMsgError("");
                 resetRemove();
@@ -100,6 +106,8 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
             weekDays: clase.days,
             days: [],
             price: clase.price,
+            quotas: clase.quotas + clase.students.length,
+            students: clase.students
         });
     }, [clase]);
 
@@ -128,6 +136,9 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
         } else if (e.target.id === "price") {
             const price = parseFloat(e.target.value);
             setFormData({ ...formData, price });
+        } else if (e.target.id === "quotas") {
+            const quotas = parseInt(e.target.value);
+            setFormData({ ...formData, quotas });
         } else 
             setFormData({ ...formData, [e.target.id]: e.target.value });
 
@@ -182,6 +193,8 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
         setMsgError("");
         setFormValid(true);
 
+        // const quotas = formData.quotas < formData.students.length 
+        // setFormData({ ...formData, quotas: formData.quotas - formData.students.length });
         setFormData({ ...formData });
     }
 
@@ -223,6 +236,9 @@ const EditClass = ({ workoutTypes, instructors, refetchClasses, closeModal, clas
                 </FloatingLabel>
                 <FloatingLabel controlId="price" label="Ingresa el precio mensual" className="my-2">
                     <Form.Control type="number" value={formData.price} onChange={handleControlChange} step=".01" />
+                </FloatingLabel>
+                <FloatingLabel controlId="quotas" label="Total de Cupos de la Clase" className="my-2">
+                    <Form.Control type="number" value={formData.quotas} onChange={handleControlChange} />
                 </FloatingLabel>
                 <ListGroup className="my-2">
                     <ListGroup.Item>

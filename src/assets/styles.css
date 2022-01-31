@@ -278,3 +278,28 @@
 	/* height: 100% !important; */
 	object-fit: cover !important;
 }
+
+.calendar-info {
+	margin-top: 1rem;
+}
+
+.calendar-info span {
+	background-color: #09b4127e;
+	width: 100px;
+	height: 30px;
+	border-radius: 25px;
+	padding: 10px 25px;
+	margin-right: 10px;
+}
+
+.calendar-info .available {
+	background-color: #09b4127e;
+}
+
+.calendar-info .unavailable {
+	background-color: #ff04197e;
+}
+
+.calendar-info .busy {
+	background-color: #0d60ccab;
+}

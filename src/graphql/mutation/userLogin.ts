@@ -7,6 +7,9 @@ const userLogin = gql`
             firstName
             lastName
             email
+            isClient
+            isInstructor
+            isAdmin
         }
     }
 `;

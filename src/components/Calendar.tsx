@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 const months = [
     ['Enero', 'ENE', 31], ['Febrero', 'FEB', 28], ['Marzo', 'MAR', 31], ['Abril', 'ABR', 30],
@@ -44,6 +46,13 @@ const Calendar = ({ user, ClassDay }) => {
     }
 
     return <>
+        <Row className="calendar-info">
+            <Col>
+                <span className="available">Clase Disponible</span>
+                <span className="unavailable">Clase Sin Cupos</span>
+                <span className="busy">Clase Reservada</span>
+            </Col>
+        </Row>
         <table className="calendar">
             <thead>
                 <tr>
@@ -54,7 +63,6 @@ const Calendar = ({ user, ClassDay }) => {
                     {days.map((day, i) => {
                         return (
                             <th key={i}>
-                                {/* <GetDay i={i} /> */}
                                 <span className="day">{getDay(i)}</span>
                                 <span className="long">{day[0]}</span>
                                 <span className="short">{day[1]}</span>
