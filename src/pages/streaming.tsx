@@ -40,8 +40,11 @@ const Streaming = ({ user, role }) => {
         configOverwrite: role === 'instructor' ? instructorConfig : clientConfig
     }
 
+    // if (true) {
+    //     return <div></div>;
+
     return <div>
-        <Jutsu {...jitsiConfig} />
+        {typeof window !== "undefined" ? <Jutsu {...jitsiConfig} /> : null}
     </div>;
 };
 
