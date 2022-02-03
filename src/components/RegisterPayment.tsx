@@ -48,6 +48,17 @@ const RegisterPayment = ({ users, classes }) => {
             setFormData({ ...formData, [e.target.id]: e.target.value });
     };
 
+    const handleDatalistChange = e => {
+        setPaymentCompleted(false);
+
+        const client = users.find(user => user.email === e.target.value);
+
+        if (client)
+            setFormData({ ...formData, clientID: client.id });
+        else
+            setFormData({ ...formData, clientID: "" });
+    };
+
     useEffect(() => {
         if (formValid)
             submitPayment({ variables: {...formData} });
@@ -77,17 +88,17 @@ const RegisterPayment = ({ users, classes }) => {
         <Container className="my-5">
             <h3>Pago de Clases</h3>
             <Form onSubmit={onSubmit}>
-                <FloatingLabel controlId="clientID" label="Usuario a registrar a pago">
-                    <Form.Select value={formData.clientID} onChange={handleControlChange} required>
-                        <option hidden>Escoge el usuario que vas a registrar el pago.</option>
+                <FloatingLabel controlId="clientID" label="Escoge el usuario al que vas a hacerle un registro de salud.">
+                    <input list="users" className="form-control" placeholder="_" onChange={handleDatalistChange} />
+                    <datalist id="users">
                         {users.map((user, i) => {
                             return (
-                                <option key={i} value={user.id}>
-                                    {user.firstName} {user.lastName} - {user.email}
+                                <option key={i} value={user.email} id="asdasd">
+                                    {user.firstName} {user.lastName}
                                 </option>
                             );
                         })}
-                    </Form.Select>
+                    </datalist>  
                 </FloatingLabel>
                 {formData.clientID &&
                     <FloatingLabel controlId="weekScheduleID" label="Clase a pagar" className="my-2">
